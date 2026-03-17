@@ -7,10 +7,10 @@
 
   <!-- OG / Social -->
   <meta property="og:title" content="AI Academy — Kontakt">
-  <meta property="og:description" content="Agentsystem, Claude Code-rådgivning eller demo av våra produkter — välj det som passar dig bäst.">
+  <meta property="og:description" content="Agentsystem, Claude Code-rådgivning — ta nästa steg med AI.">
   <meta property="og:type" content="website">
   <meta property="og:image" content="./og-image.png">  <meta property="og:url" content="./kontakt.html">
-  <meta name="description" content="Agentsystem, Claude Code-rådgivning eller demo av våra produkter — välj det som passar dig bäst.">
+  <meta name="description" content="Agentsystem, Claude Code-rådgivning — ta nästa steg med AI.">
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -772,17 +772,6 @@
             <p class="interest-card__desc">Avancerad kurs om agentbyggande, skräddarsydda agentsystem eller rådgivning kring Claude Code.</p>
           </div>
 
-          <!-- Card 3: Demo -->
-          <div class="interest-card" data-interest="demo" role="radio" aria-checked="false" tabindex="0">
-            <div class="interest-card__radio" aria-hidden="true"></div>
-            <div class="interest-card__icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
-              </svg>
-            </div>
-            <h3 class="interest-card__title">Boka demo av våra produkter</h3>
-            <p class="interest-card__desc">Se Finance Portal, ESG Portal eller Shadow IC i aktion.</p>
-          </div>
 
         </div>
 
@@ -830,26 +819,6 @@
               </div>
             </div>
 
-            <!-- Conditional: Product interest checkboxes (option 3 only) -->
-            <div class="conditional-fields" id="fieldsProducts">
-              <div class="conditional-fields__inner">
-                <div class="checkbox-group">
-                  <span class="checkbox-group__label">Intresserad av</span>
-                  <label class="checkbox-item">
-                    <input type="checkbox" name="interests" value="Finance Portal">
-                    <span>Finance Portal</span>
-                  </label>
-                  <label class="checkbox-item">
-                    <input type="checkbox" name="interests" value="ESG Portal">
-                    <span>ESG Portal</span>
-                  </label>
-                  <label class="checkbox-item">
-                    <input type="checkbox" name="interests" value="Shadow IC">
-                    <span>Shadow IC</span>
-                  </label>
-                </div>
-              </div>
-            </div>
 
             <!-- Always visible: Meddelande -->
             <div class="form-group">
@@ -933,15 +902,12 @@
     const formSubmit = document.getElementById('formSubmit');
     const successMessage = document.getElementById('successMessage');
     const fieldsCompanyRole = document.getElementById('fieldsCompanyRole');
-    const fieldsProducts = document.getElementById('fieldsProducts');
-
     // Input refs
     const nameInput = document.getElementById('field-name');
     const emailInput = document.getElementById('field-email');
     const companyInput = document.getElementById('field-company');
     const roleSelect = document.getElementById('field-role');
     const messageInput = document.getElementById('field-message');
-    const interestCheckboxes = document.querySelectorAll('input[name="interests"]');
 
     let selectedInterest = null;
 
@@ -961,11 +927,9 @@
       formHint.classList.add('hidden');
 
       // Toggle conditional fields based on selection
-      var showCompanyRole = (interest === 'agentsystem' || interest === 'demo');
-      var showProducts = (interest === 'demo');
+      var showCompanyRole = (interest === 'agentsystem');
 
       fieldsCompanyRole.classList.toggle('visible', showCompanyRole);
-      fieldsProducts.classList.toggle('visible', showProducts);
 
       // Update required attributes dynamically
       companyInput.required = showCompanyRole;
@@ -996,7 +960,7 @@
       var interest = params.get('interest');
       // Map legacy claude-code param to merged agentsystem card
       if (interest === 'claude-code') interest = 'agentsystem';
-      if (interest && ['agentsystem', 'demo'].indexOf(interest) !== -1) {
+      if (interest && ['agentsystem'].indexOf(interest) !== -1) {
         selectCard(interest);
 
         // Smooth scroll to cards
@@ -1056,7 +1020,7 @@
       }
 
       // Conditional required fields
-      if (selectedInterest === 'agentsystem' || selectedInterest === 'demo') {
+      if (selectedInterest === 'agentsystem') {
         if (!companyInput.value.trim()) {
           showError('Ange företagsnamn.');
           companyInput.focus();
@@ -1081,17 +1045,9 @@
         source: 'academy'
       };
 
-      if (selectedInterest === 'agentsystem' || selectedInterest === 'demo') {
+      if (selectedInterest === 'agentsystem') {
         payload.company = companyInput.value.trim();
         payload.role = roleSelect.value;
-      }
-
-      if (selectedInterest === 'demo') {
-        var checked = [];
-        interestCheckboxes.forEach(function(cb) {
-          if (cb.checked) checked.push(cb.value);
-        });
-        payload.interests = checked;
       }
 
       var message = messageInput.value.trim();
