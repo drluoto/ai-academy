@@ -1071,37 +1071,34 @@
 
       var payload = buildPayload();
 
-      fetch('
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      })
-      .then(function(response) {
-        if (!response.ok) {
-          throw new Error('Server svarade med status ' + response.status);
-        }
-        return response.json();
-      })
-      .then(function() {
-        // Success — hide form, show confirmation
+      // Build mailto link as fallback (no backend on static site)
+      var subject = encodeURIComponent('AI Academy — ' + selectedInterest);
+      var bodyParts = [
+        'Namn: ' + payload.name,
+        'E-post: ' + payload.email,
+        'Intresse: ' + payload.interest_type
+      ];
+      if (payload.company) bodyParts.push('Företag: ' + payload.company);
+      if (payload.role) bodyParts.push('Roll: ' + payload.role);
+      if (payload.message) bodyParts.push('\nMeddelande:\n' + payload.message);
+      var mailtoUrl = 'mailto:johannes.anton.sundstrom@gmail.com?subject=' + subject + '&body=' + encodeURIComponent(bodyParts.join('\n'));
+
+      window.location.href = mailtoUrl;
+
+      // Show success state
+      setTimeout(function() {
         form.style.display = 'none';
         formHint.style.display = 'none';
         successMessage.classList.add('visible');
 
-        // Disable card interaction
         cards.forEach(function(card) {
           card.style.pointerEvents = 'none';
           card.style.opacity = '0.5';
         });
-      })
-      .catch(function(err) {
-        showError('Något gick fel. Försök igen eller kontakta oss.');
-        console.error('Lead form error:', err);
-      })
-      .finally(function() {
+
         formSubmit.disabled = false;
         formSubmit.classList.remove('loading');
-      });
+      }, 500);
     });
 
   })();
