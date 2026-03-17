@@ -1370,16 +1370,27 @@
         <span class="academy-nav__brand-sep">/</span>
         <span class="academy-nav__brand-name" style="color: var(--accent-hover);">Academy</span>
       </a>
-      <div class="academy-nav__links">
-        <a href="reveal.html" class="academy-nav__link module-nav-link active" aria-current="page">0 Reveal</a>
-        <a href="cowork.html" class="academy-nav__link module-nav-link">1 Cowork</a>
-        <a href="rapport.html" class="academy-nav__link module-nav-link">2 Rapport</a>
-        <a href="automation.html" class="academy-nav__link module-nav-link">3 Automation</a>
-        <a href="claude-code.html" class="academy-nav__link module-nav-link">4 Claude Code</a>
-        <a href="transformation.html" class="academy-nav__link module-nav-link">Advisory</a>
-      </div>
+      <ul class="academy-nav__links">
+        <li><a href="reveal.html" class="academy-nav__link module-nav-link active" aria-current="page">0 Reveal</a></li>
+        <li><a href="cowork.html" class="academy-nav__link module-nav-link">1 Cowork</a></li>
+        <li><a href="rapport.html" class="academy-nav__link module-nav-link">2 Rapport</a></li>
+        <li><a href="automation.html" class="academy-nav__link module-nav-link">3 Automation</a></li>
+        <li><a href="claude-code.html" class="academy-nav__link module-nav-link">4 Claude Code</a></li>
+      </ul>
+      <button class="academy-nav__hamburger" aria-label="Meny" aria-expanded="false" onclick="this.setAttribute('aria-expanded', this.getAttribute('aria-expanded')==='false');document.getElementById('mobile-drawer').classList.toggle('open');">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </nav>
+
+  <!-- Mobile drawer -->
+  <div class="academy-nav__mobile-drawer" id="mobile-drawer">
+    <a href="reveal.html" class="academy-nav__mobile-link active">0 Reveal</a>
+    <a href="cowork.html" class="academy-nav__mobile-link">1 Cowork</a>
+    <a href="rapport.html" class="academy-nav__mobile-link">2 Rapport</a>
+    <a href="automation.html" class="academy-nav__mobile-link">3 Automation</a>
+    <a href="claude-code.html" class="academy-nav__mobile-link">4 Claude Code</a>
+  </div>
 
   <!-- Progress bar -->
   <div class="progress-bar" aria-hidden="true"></div>

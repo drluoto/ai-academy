@@ -712,13 +712,11 @@
         <span class="academy-nav__brand-name" style="color: var(--accent-hover);">Academy</span>
       </a>
       <ul class="academy-nav__links">
-        <li><a href="index.html" class="academy-nav__link">Översikt</a></li>
-        <li><a href="reveal.html" class="academy-nav__link">Modul 0</a></li>
-        <li><a href="cowork.html" class="academy-nav__link">Modul 1</a></li>
-        <li><a href="rapport.html" class="academy-nav__link">Modul 2</a></li>
-        <li><a href="automation.html" class="academy-nav__link">Modul 3</a></li>
-        <li><a href="claude-code.html" class="academy-nav__link">Modul 4</a></li>
-        <li><a href="transformation.html" class="academy-nav__link">Advisory</a></li>
+        <li><a href="reveal.html" class="academy-nav__link module-nav-link">0 Reveal</a></li>
+        <li><a href="cowork.html" class="academy-nav__link module-nav-link">1 Cowork</a></li>
+        <li><a href="rapport.html" class="academy-nav__link module-nav-link">2 Rapport</a></li>
+        <li><a href="automation.html" class="academy-nav__link module-nav-link">3 Automation</a></li>
+        <li><a href="claude-code.html" class="academy-nav__link module-nav-link">4 Claude Code</a></li>
       </ul>
       <button class="academy-nav__hamburger" aria-label="Meny" aria-expanded="false" onclick="this.setAttribute('aria-expanded', this.getAttribute('aria-expanded')==='false');document.getElementById('mobile-drawer').classList.toggle('open');">
         <span></span><span></span><span></span>
@@ -728,13 +726,11 @@
 
   <!-- Mobile drawer -->
   <div class="academy-nav__mobile-drawer" id="mobile-drawer">
-    <a href="index.html" class="academy-nav__mobile-link">Översikt</a>
-    <a href="reveal.html" class="academy-nav__mobile-link">Modul 0 — Reveal</a>
-    <a href="cowork.html" class="academy-nav__mobile-link">Modul 1 — Cowork</a>
-    <a href="rapport.html" class="academy-nav__mobile-link">Modul 2 — Rapport</a>
-    <a href="automation.html" class="academy-nav__mobile-link">Modul 3 — Plugins</a>
-    <a href="claude-code.html" class="academy-nav__mobile-link">Modul 4 — Claude Code</a>
-    <a href="transformation.html" class="academy-nav__mobile-link">Advisory</a>
+    <a href="reveal.html" class="academy-nav__mobile-link">0 Reveal</a>
+    <a href="cowork.html" class="academy-nav__mobile-link">1 Cowork</a>
+    <a href="rapport.html" class="academy-nav__mobile-link">2 Rapport</a>
+    <a href="automation.html" class="academy-nav__mobile-link">3 Automation</a>
+    <a href="claude-code.html" class="academy-nav__mobile-link">4 Claude Code</a>
   </div>
 
   <main>
@@ -764,19 +760,7 @@
         <!-- Three option cards -->
         <div class="interest-cards animate-on-scroll" data-delay="120" role="radiogroup" aria-label="Välj intresse">
 
-          <!-- Card 1: AI Transformation -->
-          <div class="interest-card" data-interest="transformation" role="radio" aria-checked="false" tabindex="0">
-            <div class="interest-card__radio" aria-hidden="true"></div>
-            <div class="interest-card__icon" style="background: rgba(6, 182, 212, 0.12); color: var(--cyan);">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-              </svg>
-            </div>
-            <h3 class="interest-card__title">AI Transformation Advisory</h3>
-            <p class="interest-card__desc">Rådgivning kring AI-transformation: arbetsflöden, ledarskap och adoption. Vi hjälper er gå från strategi till produktion.</p>
-          </div>
-
-          <!-- Card 2: Agentsystem (merged: kurs + samtal) -->
+          <!-- Card 1: Agentsystem (merged: kurs + samtal) -->
           <div class="interest-card" data-interest="agentsystem" role="radio" aria-checked="false" tabindex="0">
             <div class="interest-card__radio" aria-hidden="true"></div>
             <div class="interest-card__icon">
@@ -924,8 +908,7 @@
 
         <ul class="site-footer__links">
           <li><a href="index.html" class="site-footer__link">Academy</a></li>
-          <li><a href="transformation.html" class="site-footer__link">Advisory</a></li>
-          <li><a href="#" class="site-footer__link">Kontakt</a></li>
+          <li><a href="kontakt.html" class="site-footer__link">Kontakt</a></li>
         </ul>
 
       </div>
@@ -978,7 +961,7 @@
       formHint.classList.add('hidden');
 
       // Toggle conditional fields based on selection
-      var showCompanyRole = (interest === 'transformation' || interest === 'agentsystem' || interest === 'demo');
+      var showCompanyRole = (interest === 'agentsystem' || interest === 'demo');
       var showProducts = (interest === 'demo');
 
       fieldsCompanyRole.classList.toggle('visible', showCompanyRole);
@@ -1013,7 +996,7 @@
       var interest = params.get('interest');
       // Map legacy claude-code param to merged agentsystem card
       if (interest === 'claude-code') interest = 'agentsystem';
-      if (interest && ['transformation', 'agentsystem', 'demo'].indexOf(interest) !== -1) {
+      if (interest && ['agentsystem', 'demo'].indexOf(interest) !== -1) {
         selectCard(interest);
 
         // Smooth scroll to cards
@@ -1073,7 +1056,7 @@
       }
 
       // Conditional required fields
-      if (selectedInterest === 'transformation' || selectedInterest === 'agentsystem' || selectedInterest === 'demo') {
+      if (selectedInterest === 'agentsystem' || selectedInterest === 'demo') {
         if (!companyInput.value.trim()) {
           showError('Ange företagsnamn.');
           companyInput.focus();
@@ -1098,7 +1081,7 @@
         source: 'academy'
       };
 
-      if (selectedInterest === 'transformation' || selectedInterest === 'agentsystem' || selectedInterest === 'demo') {
+      if (selectedInterest === 'agentsystem' || selectedInterest === 'demo') {
         payload.company = companyInput.value.trim();
         payload.role = roleSelect.value;
       }
