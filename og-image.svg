@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#09090B"/>
+      <stop offset="100%" style="stop-color:#18181B"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#6366F1"/>
+      <stop offset="100%" style="stop-color:#818CF8"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <!-- Grid overlay -->
+  <g opacity="0.04">
+    <line x1="0" y1="0" x2="0" y2="630" stroke="white" stroke-width="1"/>
+    <line x1="80" y1="0" x2="80" y2="630" stroke="white" stroke-width="1"/>
+    <line x1="160" y1="0" x2="160" y2="630" stroke="white" stroke-width="1"/>
+    <line x1="240" y1="0" x2="240" y2="630" stroke="white" stroke-width="1"/>
+    <line x1="320" y1="0" x2="320" y2="630" stroke="white" stroke-width="1"/>
+    <line x1="400" y1="0" x2="400" y2="630" stroke="white" stroke-width="1"/>
+    <line x1="480" y1="0" x2="480" y2="630" stroke="white" stroke-width="1"/>
+    <line x1="560" y1="0" x2="560" y2="630" stroke="white" stroke-width="1"/>
+    <line x1="640" y1="0" x2="640" y2="630" stroke="white" stroke-width="1"/>
+    <line x1="720" y1="0" x2="720" y2="630" stroke="white" stroke-width="1"/>
+    <line x1="800" y1="0" x2="800" y2="630" stroke="white" stroke-width="1"/>
+    <line x1="880" y1="0" x2="880" y2="630" stroke="white" stroke-width="1"/>
+    <line x1="960" y1="0" x2="960" y2="630" stroke="white" stroke-width="1"/>
+    <line x1="1040" y1="0" x2="1040" y2="630" stroke="white" stroke-width="1"/>
+    <line x1="1120" y1="0" x2="1120" y2="630" stroke="white" stroke-width="1"/>
+    <line x1="1200" y1="0" x2="1200" y2="630" stroke="white" stroke-width="1"/>
+    <line x1="0" y1="80" x2="1200" y2="80" stroke="white" stroke-width="1"/>
+    <line x1="0" y1="160" x2="1200" y2="160" stroke="white" stroke-width="1"/>
+    <line x1="0" y1="240" x2="1200" y2="240" stroke="white" stroke-width="1"/>
+    <line x1="0" y1="320" x2="1200" y2="320" stroke="white" stroke-width="1"/>
+    <line x1="0" y1="400" x2="1200" y2="400" stroke="white" stroke-width="1"/>
+    <line x1="0" y1="480" x2="1200" y2="480" stroke="white" stroke-width="1"/>
+    <line x1="0" y1="560" x2="1200" y2="560" stroke="white" stroke-width="1"/>
+  </g>
+  <!-- Vitronia logo mark -->
+  <circle cx="600" cy="180" r="40" fill="none" stroke="#6366F1" stroke-width="3" opacity="0.8"/>
+  <circle cx="600" cy="180" r="8" fill="#6366F1" opacity="0.8"/>
+  <!-- Title -->
+  <text x="600" y="280" text-anchor="middle" fill="#E8E8EF" font-family="system-ui, -apple-system, sans-serif" font-size="56" font-weight="700">Vitronia Academy</text>
+  <!-- Subtitle -->
+  <text x="600" y="340" text-anchor="middle" fill="#A1A1AA" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="400">Fran Assistent till Agent</text>
+  <!-- Accent line -->
+  <rect x="500" y="370" width="200" height="3" rx="1.5" fill="url(#accent)" opacity="0.6"/>
+  <!-- Tags -->
+  <text x="600" y="430" text-anchor="middle" fill="#71717A" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="400">5 moduler · Gratis · Claude Desktop &amp; Claude Code</text>
+  <!-- Bottom bar -->
+  <rect x="0" y="610" width="1200" height="20" fill="#6366F1" opacity="0.15"/>
+  <rect x="0" y="614" width="1200" height="3" fill="url(#accent)" opacity="0.4"/>
+  <!-- Domain -->
+  <text x="600" y="580" text-anchor="middle" fill="#52525B" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="400">academy.vitronia.ai</text>
+</svg>

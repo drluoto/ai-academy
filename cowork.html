@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modul 1: Cowork — Din första AI-kollega | AI Academy</title>
+  <meta name="description" content="Installera Claude Desktop, kör din första analys och lär dig nyckelprinciperna för AI-samarbete. Hands-on tutorial på 20 minuter.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/vitronia-v2.css">
+  <link rel="stylesheet" href="css/academy.css">
+  <style>
+    /* Page-specific styles for components */
+
+    /* --- Desktop file mockup --- */
+    .mockup-desktop {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.25rem;
+      margin: 1rem 0;
+    }
+
+    .mockup-desktop__icon {
+      width: 40px;
+      height: 48px;
+      background: var(--surface-3);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .mockup-desktop__icon::after {
+      content: '.txt';
+      font-size: 0.5rem;
+      font-weight: 700;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      position: absolute;
+      bottom: 4px;
+    }
+
+    .mockup-desktop__label {
+      font-size: 0.8125rem;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .mockup-desktop__check {
+      margin-left: auto;
+      color: var(--green);
+      display: flex;
+    }
+
+    /* --- Iteration progression --- */
+    .iteration-flow {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin: 1.5rem 0;
+    }
+
+    .iteration-flow__item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      position: relative;
+    }
+
+    .iteration-flow__marker {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .iteration-flow__dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: var(--surface-1);
+      flex-shrink: 0;
+      z-index: 1;
+    }
+
+    .iteration-flow__item:nth-child(1) .iteration-flow__dot {
+      border-color: var(--text-tertiary);
+    }
+
+    .iteration-flow__item:nth-child(2) .iteration-flow__dot {
+      border-color: var(--accent);
+    }
+
+    .iteration-flow__item:nth-child(3) .iteration-flow__dot {
+      border-color: var(--green);
+      background: var(--green);
+    }
+
+    .iteration-flow__line {
+      width: 2px;
+      height: 1.5rem;
+      background: var(--border);
+    }
+
+    .iteration-flow__item:last-child .iteration-flow__line {
+      display: none;
+    }
+
+    .iteration-flow__content {
+      padding-bottom: 1rem;
+    }
+
+    .iteration-flow__label {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .iteration-flow__desc {
+      font-size: 0.8125rem;
+      color: var(--text-tertiary);
+    }
+
+    .iteration-flow__arrow {
+      display: flex;
+      justify-content: center;
+      color: var(--text-tertiary);
+      padding: 0.25rem 0;
+      font-size: 0.75rem;
+    }
+
+    /* --- Error highlight --- */
+    .error-highlight {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: var(--radius);
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .error-highlight__value {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--red);
+      font-family: var(--font-mono);
+      text-decoration: line-through;
+      text-decoration-color: var(--red);
+    }
+
+    .error-highlight__badge {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--red);
+      background: rgba(239, 68, 68, 0.15);
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    /* --- Comparison mockup output --- */
+    .comparison__output {
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.875rem 1rem;
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      line-height: 1.7;
+      margin-top: 0.75rem;
+    }
+
+    .comparison__panel--after .comparison__output {
+      border-color: rgba(16, 185, 129, 0.2);
+    }
+
+    /* --- Bottom nav --- */
+    .bottom-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 2rem 0;
+      border-top: 1px solid var(--border);
+      margin-top: 3rem;
+    }
+
+    .bottom-nav__link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color var(--transition-fast);
+    }
+
+    .bottom-nav__link:hover {
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .bottom-nav__link svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* --- Principle cards --- */
+    .principle-card {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .principle-card__header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .principle-card__num {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.8125rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .principle-card__title {
+      font-size: 1.0625rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    /* --- ZIP contents list --- */
+    .zip-contents {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+
+    .zip-contents__item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      background: var(--surface-2);
+      padding: 0.5rem 0.75rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+
+    .zip-contents__item svg {
+      width: 14px;
+      height: 14px;
+      color: var(--text-tertiary);
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 768px) {
+      .zip-contents {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================================================================
+       STICKY NAVIGATION
+       ================================================================ -->
+  <nav class="academy-nav" role="navigation" aria-label="Kursnavigation">
+    <div class="academy-nav__inner">
+      <a href="index.html" class="academy-nav__brand">
+        <svg class="academy-nav__brand-logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c3.87 0 7 3.13 7 7s-3.13 7-7 7-7-3.13-7-7 3.13-7 7-7zm0 3c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 3c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z" fill="currentColor" opacity="0.9"/>
+        </svg>
+        <span class="academy-nav__brand-name">AI</span>
+        <span class="academy-nav__brand-sep">/</span>
+        <span class="academy-nav__brand-name" style="color: var(--accent-hover);">Academy</span>
+      </a>
+      <ul class="academy-nav__links">
+        <li><a href="index.html" class="academy-nav__link module-nav-link">Översikt</a></li>
+        <li><a href="reveal.html" class="academy-nav__link module-nav-link">0 Reveal</a></li>
+        <li><a href="cowork.html" class="academy-nav__link module-nav-link active" aria-current="page">1 Cowork</a></li>
+        <li><a href="rapport.html" class="academy-nav__link module-nav-link">2 Rapport</a></li>
+        <li><a href="automation.html" class="academy-nav__link module-nav-link">3 Automation</a></li>
+        <li><a href="claude-code.html" class="academy-nav__link module-nav-link">4 Claude Code</a></li>
+        <li><a href="transformation.html" class="academy-nav__link module-nav-link">Advisory</a></li>
+      </ul>
+      <button class="academy-nav__hamburger" aria-label="Meny" aria-expanded="false" onclick="this.setAttribute('aria-expanded', this.getAttribute('aria-expanded')==='false');document.querySelector('.academy-nav__mobile-drawer').classList.toggle('open');">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <div class="academy-nav__mobile-drawer">
+      <a href="index.html" class="academy-nav__mobile-link">Översikt</a>
+      <a href="reveal.html" class="academy-nav__mobile-link">0 Reveal</a>
+      <a href="cowork.html" class="academy-nav__mobile-link active">1 Cowork</a>
+      <a href="rapport.html" class="academy-nav__mobile-link">2 Rapport</a>
+      <a href="automation.html" class="academy-nav__mobile-link">3 Automation</a>
+      <a href="claude-code.html" class="academy-nav__mobile-link">4 Claude Code</a>
+      <a href="transformation.html" class="academy-nav__mobile-link">Advisory</a>
+    </div>
+  </nav>
+
+  <!-- Progress bar -->
+  <div class="progress-bar" role="progressbar" aria-label="Läsframsteg"></div>
+
+
+  <!-- ================================================================
+       MAIN CONTENT
+       ================================================================ -->
+  <main>
+
+    <!-- ============================================================
+         HERO
+         ============================================================ -->
+    <header class="hero section animate-on-scroll" style="padding-top: calc(var(--nav-height) + 3rem);">
+      <div class="container">
+        <span class="hero__eyebrow">Modul 1</span>
+        <h1 class="hero__title">Cowork &mdash; Din första <span class="gradient-text">AI-kollega</span></h1>
+        <p class="hero__subtitle">Du ska nu göra det du just såg i Modul 0 &mdash; själv. På 20 minuter är du igång.</p>
+        <div class="hero__meta">
+          <span class="hero__meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            20 minuter
+          </span>
+          <span class="hero__meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+            Hands-on tutorial
+          </span>
+          <span class="hero__meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+            Följ steg för steg
+          </span>
+        </div>
+      </div>
+    </header>
+
+
+    <!-- ============================================================
+         1.1 SETUP (5 min)
+         ============================================================ -->
+    <section class="section animate-on-scroll" data-section="setup">
+      <div class="container">
+        <span class="section-label">Block 1.1 &mdash; 5 min</span>
+        <h2>Installera Claude Desktop</h2>
+        <p class="lead">Fyra steg från noll till en fungerande AI-kollega på din dator.</p>
+
+        <div class="steps">
+
+          <!-- Step 1: Download -->
+          <div class="step">
+            <div class="step__indicator">
+              <div class="step__number">1</div>
+              <div class="step__line"></div>
+            </div>
+            <div class="step__body">
+              <h4 class="step__title">Gå till claude.ai/download och ladda ner Claude Desktop</h4>
+              <p class="step__desc">Gå till <a href="https://claude.ai/download" target="_blank" rel="noopener" style="color: var(--accent-hover);">claude.ai/download</a> och välj rätt version för ditt operativsystem (macOS eller Windows). Kör installationen som vanligt.</p>
+            </div>
+          </div>
+
+          <!-- Step 2: Install & Login -->
+          <div class="step">
+            <div class="step__indicator">
+              <div class="step__number">2</div>
+              <div class="step__line"></div>
+            </div>
+            <div class="step__body">
+              <h4 class="step__title">Installera och logga in</h4>
+              <p class="step__desc">Öppna den nedladdade filen och följ installationsguiden. Logga sedan in med ditt konto.</p>
+
+              <!-- Screenshot: Claude Desktop after login — Cowork tab active -->
+              <div class="screenshot-frame screenshot-frame--zoomable">
+                <picture>
+                  <source srcset="screenshots/cowork-01-start.webp" type="image/webp">
+                  <img src="screenshots/cowork-01-start.png"
+                       alt="Claude Desktop efter inloggning — Cowork-fliken är aktiv"
+                       loading="lazy"
+                       class="screenshot-frame__img">
+                </picture>
+                <div class="screenshot-annotation" style="top: 3%; left: 45%;">
+                  <span class="screenshot-annotation__marker">1</span>
+                  <span class="screenshot-annotation__text">Cowork-fliken</span>
+                </div>
+                <div class="screenshot-annotation" style="top: 35%; left: 36%;">
+                  <span class="screenshot-annotation__marker">2</span>
+                  <span class="screenshot-annotation__text">Work in a folder</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3: Verify -->
+          <div class="step">
+            <div class="step__indicator">
+              <div class="step__number">3</div>
+              <div class="step__line"></div>
+            </div>
+            <div class="step__body">
+              <h4 class="step__title">Verifiera att Cowork fungerar</h4>
+              <p class="step__desc">Kopiera prompten nedan och klistra in den i Claude Desktop. Om en fil dyker upp på skrivbordet fungerar allt.</p>
+
+              <div class="code-block">
+                <button class="code-copy-btn" type="button">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                  Kopiera
+                </button>
+                <pre><code class="code-content">Skapa en fil på mitt skrivbord som heter test.txt med texten "Hej från Claude"</code></pre>
+              </div>
+
+              <p class="step__desc" style="margin-top: 0.75rem;"><strong>Förväntad respons:</strong></p>
+              <div class="mockup-desktop">
+                <div class="mockup-desktop__icon"></div>
+                <span class="mockup-desktop__label">test.txt</span>
+                <span class="mockup-desktop__check">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </span>
+              </div>
+              <p class="text-muted">En fil dyker upp på skrivbordet. Claude kan läsa och skriva filer direkt på din dator.</p>
+            </div>
+          </div>
+
+          <!-- Step 4: Download exercise files -->
+          <div class="step">
+            <div class="step__indicator">
+              <div class="step__number">4</div>
+              <div class="step__line"></div>
+            </div>
+            <div class="step__body">
+              <h4 class="step__title">Ladda ner övningsfiler</h4>
+              <p class="step__desc">Dessa filer används i övningarna genom hela kursen. Packa upp ZIP-filen i en mapp du hittar enkelt.</p>
+
+              <div style="margin: 1.25rem 0;">
+                <a href="files/vitronia-academy-ovningar.zip" class="btn-download" download>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Ladda ner övningsfiler (ZIP)
+                </a>
+              </div>
+
+              <p class="text-muted mb-1">Innehåll:</p>
+              <div class="zip-contents">
+                <div class="zip-contents__item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  kvartalsdata.xlsx
+                </div>
+                <div class="zip-contents__item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  kontext.md
+                </div>
+                <div class="zip-contents__item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  grafisk_profil.md
+                </div>
+                <div class="zip-contents__item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  kvalitetschecklista.md
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /.steps -->
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         1.2 FORSTA UPPGIFTEN (8 min)
+         ============================================================ -->
+    <section class="section animate-on-scroll" data-section="uppgift">
+      <div class="container">
+        <span class="section-label">Block 1.2 &mdash; 8 min</span>
+        <h2>Din första analys</h2>
+        <p class="lead">Du har en Excelfil med kvartalsdata. Nu ska Claude analysera den åt dig.</p>
+
+        <div class="steps">
+
+          <!-- Step 1: Prompt -->
+          <div class="step">
+            <div class="step__indicator">
+              <div class="step__number">1</div>
+              <div class="step__line"></div>
+            </div>
+            <div class="step__body">
+              <h4 class="step__title">Ge Claude instruktionen</h4>
+              <p class="step__desc">Kopiera prompten nedan och klistra in den i Claude Desktop. Byt ut <code>[övningsmappen]</code> mot din mapp.</p>
+
+              <div class="code-block">
+                <button class="code-copy-btn" type="button">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                  Kopiera
+                </button>
+                <pre><code class="code-content">Öppna filen kvartalsdata.xlsx i mappen [övningsmappen].
+Sammanfatta avvikelserna för alla fyra kvartalen i en tabell.
+Kolumner: Konto | Budget | Utfall | Avvikelse | Kommentar
+Sortera på största avvikelsen först.</code></pre>
+              </div>
+
+              <!-- Screenshot: Prompt typed into Cowork -->
+              <div class="screenshot-frame screenshot-frame--zoomable" style="margin-top: 1.25rem;">
+                <picture>
+                  <source srcset="screenshots/cowork-05-prompt-typed.webp" type="image/webp">
+                  <img src="screenshots/cowork-05-prompt-typed.png"
+                       alt="Analysprompt inskriven i Claude Desktop med Cowork-main mapp aktiv"
+                       loading="lazy"
+                       class="screenshot-frame__img">
+                </picture>
+                <div class="screenshot-annotation" style="top: 36%; left: 35%;">
+                  <span class="screenshot-annotation__marker">1</span>
+                  <span class="screenshot-annotation__text">Arbetsmappen Cowork-main</span>
+                </div>
+                <div class="screenshot-annotation" style="top: 26%; left: 37%;">
+                  <span class="screenshot-annotation__marker">2</span>
+                  <span class="screenshot-annotation__text">Den strukturerade prompten</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2: Expected output -->
+          <div class="step">
+            <div class="step__indicator">
+              <div class="step__number">2</div>
+              <div class="step__line"></div>
+            </div>
+            <div class="step__body">
+              <h4 class="step__title">Förväntad output</h4>
+              <p class="step__desc">Claude läser filen, gör beräkningarna och presenterar resultatet. Så här kan det se ut:</p>
+
+              <!-- Screenshot: Claude Cowork result with analysis -->
+              <div class="screenshot-frame screenshot-frame--zoomable">
+                <picture>
+                  <source srcset="screenshots/cowork-09-final.webp" type="image/webp">
+                  <img src="screenshots/cowork-09-final.png"
+                       alt="Claude Cowork visar färdig budgetanalys med avvikelser"
+                       loading="lazy"
+                       class="screenshot-frame__img">
+                </picture>
+                <div class="screenshot-annotation" style="top: 8%; right: 4%;">
+                  <span class="screenshot-annotation__text">Progress-panel visar alla steg</span>
+                  <span class="screenshot-annotation__marker">1</span>
+                </div>
+                <div class="screenshot-annotation" style="top: 28%; left: 18%;">
+                  <span class="screenshot-annotation__marker">2</span>
+                  <span class="screenshot-annotation__text">Färdig analys med avvikelser</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3: Iterate -->
+          <div class="step">
+            <div class="step__indicator">
+              <div class="step__number">3</div>
+              <div class="step__line"></div>
+            </div>
+            <div class="step__body">
+              <h4 class="step__title">Iterera</h4>
+              <p class="step__desc">Du behöver inte nöja dig med första svaret. Be Claude förbättra resultatet:</p>
+
+              <div class="code-block">
+                <button class="code-copy-btn" type="button">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                  Kopiera
+                </button>
+                <pre><code class="code-content">Lägg till en kolumn med procentuell avvikelse och markera de tre största avvikelserna.</code></pre>
+              </div>
+
+              <p class="step__desc" style="margin-top: 0.75rem;">Claude bygger vidare på föregående resultat &mdash; du behöver inte börja om från början.</p>
+            </div>
+          </div>
+
+        </div><!-- /.steps -->
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         1.3 NYCKELPRINCIPER (5 min)
+         ============================================================ -->
+    <section class="section animate-on-scroll" data-section="principer">
+      <div class="container">
+        <span class="section-label">Block 1.3 &mdash; 5 min</span>
+        <h2>Fyra saker att komma ihåg</h2>
+        <p class="lead">Dessa principer gör skillnaden mellan "det där AI-verktyget" och en riktig arbetspartner.</p>
+
+        <!-- Principle 1 -->
+        <div class="principle-card animate-on-scroll">
+          <div class="principle-card__header">
+            <div class="principle-card__num">1</div>
+            <h3 class="principle-card__title" style="margin-bottom: 0;">Instruktionens kvalitet avgör resultatet</h3>
+          </div>
+          <p style="color: var(--text-secondary); margin-bottom: 1.25rem;">En vag instruktion ger ett vagt svar. En specifik instruktion ger ett användbart resultat.</p>
+
+          <div class="comparison">
+            <div class="comparison__panel comparison__panel--before">
+              <div class="comparison__label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                Vag
+              </div>
+              <div class="comparison__content">
+                <p style="margin: 0 0 0.5rem;"><code>Sammanfatta Excel-filen</code></p>
+              </div>
+              <div class="comparison__output">Filen innehåller finansiell data med intäkter och kostnader fördelat på fyra kvartal...</div>
+            </div>
+            <div class="comparison__divider">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </div>
+            <div class="comparison__panel comparison__panel--after">
+              <div class="comparison__label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                Specifik
+              </div>
+              <div class="comparison__content">
+                <p style="margin: 0 0 0.5rem;"><code>Sammanfatta avvikelserna för Q1–Q4, sortera på största avvikelsen, lägg till kommentarer</code></p>
+              </div>
+              <div class="comparison__output">| Konto | Budget | Utfall | Avvikelse |
+| Konsulttjänster | 800 | 920 | +120 (+15%) |
+| IT &amp; Licenser | 400 | 300 | -100 (-25%) |
+...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Principle 2 -->
+        <div class="principle-card animate-on-scroll">
+          <div class="principle-card__header">
+            <div class="principle-card__num">2</div>
+            <h3 class="principle-card__title" style="margin-bottom: 0;">Iterera</h3>
+          </div>
+          <p style="color: var(--text-secondary); margin-bottom: 1.25rem;">Tänk på det som en konversation, inte en Google-sökning. Varje steg bygger på föregående.</p>
+
+          <div class="iteration-flow">
+            <div class="iteration-flow__item">
+              <div class="iteration-flow__marker">
+                <div class="iteration-flow__dot"></div>
+                <div class="iteration-flow__line"></div>
+              </div>
+              <div class="iteration-flow__content">
+                <div class="iteration-flow__label">Första försök</div>
+                <div class="iteration-flow__desc">Grundläggande tabell med data &mdash; korrekt men rått</div>
+              </div>
+            </div>
+            <div class="iteration-flow__item">
+              <div class="iteration-flow__marker">
+                <div class="iteration-flow__dot"></div>
+                <div class="iteration-flow__line"></div>
+              </div>
+              <div class="iteration-flow__content">
+                <div class="iteration-flow__label">Andra försök</div>
+                <div class="iteration-flow__desc">Sorterad, med procentuella avvikelser och färgkodning</div>
+              </div>
+            </div>
+            <div class="iteration-flow__item">
+              <div class="iteration-flow__marker">
+                <div class="iteration-flow__dot"></div>
+              </div>
+              <div class="iteration-flow__content">
+                <div class="iteration-flow__label">Tredje försök</div>
+                <div class="iteration-flow__desc">Insikter, trender och rekommendationer &mdash; redo att presentera</div>
+              </div>
+            </div>
+          </div>
+
+          <p class="text-muted">Varje steg tar några sekunder. På tre iterationer har du ett resultat som annars tagit en timme.</p>
+        </div>
+
+        <!-- Principle 3 -->
+        <div class="principle-card animate-on-scroll">
+          <div class="principle-card__header">
+            <div class="principle-card__num">3</div>
+            <h3 class="principle-card__title" style="margin-bottom: 0;">Granska alltid</h3>
+          </div>
+          <p style="color: var(--text-secondary); margin-bottom: 1.25rem;">AI gör misstag. Ibland subtila sådana som ser helt rimliga ut. Granska alltid siffrorna mot källan.</p>
+
+          <!-- Screenshot: Claude working on analysis (showing progress steps) -->
+          <div class="screenshot-frame" style="margin-bottom: 1rem;">
+            <picture>
+              <source srcset="screenshots/cowork-07-result.webp" type="image/webp">
+              <img src="screenshots/cowork-07-result.png"
+                   alt="Claude Cowork visar arbetssteg under analys"
+                   loading="lazy"
+                   class="screenshot-frame__img">
+            </picture>
+            <div class="screenshot-caption">Claude visar varje steg — granska alltid siffrorna mot källan</div>
+          </div>
+
+          <div class="checkpoint--warning checkpoint" style="margin-top: 1rem;">
+            <div class="checkpoint__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            </div>
+            <div class="checkpoint__body">
+              <p class="checkpoint__title">Viktigt</p>
+              <p class="checkpoint__text">AI gör misstag. Granska <strong>alltid</strong> siffrorna mot originalkällan innan du använder dem.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Principle 4 -->
+        <div class="principle-card animate-on-scroll">
+          <div class="principle-card__header">
+            <div class="principle-card__num">4</div>
+            <h3 class="principle-card__title" style="margin-bottom: 0;">Arbeta säkert</h3>
+          </div>
+          <p style="color: var(--text-secondary); margin-bottom: 1.25rem;">Cowork kan läsa, skriva och radera filer på din dator. Det är kraftfullt &mdash; men kräver medvetenhet. Du ansvarar för allt Claude gör å dina vägnar.</p>
+
+          <div class="table-wrap" style="margin-bottom: 1.25rem;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Princip</th>
+                  <th>Praktiskt</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Begränsa filåtkomst</strong></td>
+                  <td>Peka Cowork mot en dedikerad arbetsmapp &mdash; inte hela hårddisken. Undvik mappar med lösenord, ekonomidokument eller personuppgifter.</td>
+                </tr>
+                <tr>
+                  <td><strong>Övervaka beteendet</strong></td>
+                  <td>Reagerar Claude på filer du inte nämnt? Utvidgar den uppdraget utanför det du bad om? Stanna och granska.</td>
+                </tr>
+                <tr>
+                  <td><strong>Var försiktig med webben</strong></td>
+                  <td>Webbinnehåll kan innehålla dolda instruktioner (<em>prompt injection</em>). Begränsa Coworks webbåtkomst till betrodda sidor.</td>
+                </tr>
+                <tr>
+                  <td><strong>Schemalagda uppgifter</strong></td>
+                  <td>Automatiska uppgifter körs utan din aktiva övervakning. Börja med lågrisk &mdash; sammanfattningar, inte utskick. Granska resultaten regelbundet.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="checkpoint--warning checkpoint">
+            <div class="checkpoint__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div class="checkpoint__body">
+              <p class="checkpoint__title">Ditt ansvar</p>
+              <p class="checkpoint__text">Allt Claude publicerar, skickar eller ändrar sker å dina vägnar. Du ansvarar för resultatet &mdash; precis som med en assistent av kött och blod. <a href="https://support.claude.com/en/articles/13364135-use-cowork-safely" target="_blank" rel="noopener" style="color: var(--accent-hover);">Läs Anthropics fullständiga säkerhetsguide &rarr;</a></p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         1.4 CHECKPOINT
+         ============================================================ -->
+    <section class="section animate-on-scroll" data-section="checkpoint">
+      <div class="container">
+        <span class="section-label">Checkpoint</span>
+
+        <div class="checkpoint">
+          <div class="checkpoint__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <div class="checkpoint__body">
+            <p class="checkpoint__title">Modul 1 avklarad</p>
+            <p class="checkpoint__text">Har du fått en tabell med avvikelser från alla fyra kvartalen? Fungerar kopiera-klistra in av prompten?</p>
+            <p class="checkpoint__text" style="margin-top: 0.5rem;">Då är du redo för nästa modul &mdash; där vi lär oss <strong>context engineering</strong> och hur du styr resultatet med rätt kontext.</p>
+          </div>
+        </div>
+
+        <div class="text-center" style="margin-top: 2rem;">
+          <a href="rapport.html" class="btn btn--primary btn--lg">
+            Gå till Modul 2
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </div>
+
+        <hr>
+
+        <!-- Expandable: Om du kör fast -->
+        <div class="expandable">
+          <button class="expandable-trigger" aria-expanded="false">
+            <span>Om du kör fast</span>
+            <svg class="expandable-trigger__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="expandable-content">
+            <div class="expandable-content__inner">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Problem</th>
+                      <th>Lösning</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Cowork hittar inte filen</strong></td>
+                      <td>Kontrollera att du pekat Cowork mot rätt mapp. Du kan dra och släppa filen direkt i chattfönstret.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Jag får inget svar</strong></td>
+                      <td>Prova att stänga och öppna Cowork igen. Kontrollera din internetanslutning.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Tabellen är oformaterad</strong></td>
+                      <td>Lägg till "Formatera som en tabell" i din prompt.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Claude verkar inte förstå</strong></td>
+                      <td>Var mer specifik &mdash; namnge filen, kolumnerna och det format du vill ha.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom navigation -->
+        <div class="bottom-nav">
+          <a href="reveal.html" class="bottom-nav__link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Modul 0: Reveal
+          </a>
+          <a href="rapport.html" class="bottom-nav__link">
+            Modul 2: Rapport
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </div>
+
+      </div>
+    </section>
+
+
+  </main>
+
+
+  <!-- ================================================================
+       FOOTER
+       ================================================================ -->
+  <footer class="academy-footer">
+    <div class="academy-footer__logo">
+      <span style="font-weight: 600; color: var(--text-secondary);">AI Academy</span>
+    </div>
+    <p>&copy; 2026 AI Academy. Alla rättigheter förbehållna.</p>
+  </footer>
+
+
+  <script src="js/academy.js"></script>
+</body>
+</html>

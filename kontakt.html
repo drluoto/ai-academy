@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Academy — Vad vill du göra härnäst?</title>
+
+  <!-- OG / Social -->
+  <meta property="og:title" content="AI Academy — Kontakt">
+  <meta property="og:description" content="Agentsystem, Claude Code-rådgivning eller demo av våra produkter — välj det som passar dig bäst.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="./og-image.png">  <meta property="og:url" content="./kontakt.html">
+  <meta name="description" content="Agentsystem, Claude Code-rådgivning eller demo av våra produkter — välj det som passar dig bäst.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Design system + Academy layer -->
+  <link rel="stylesheet" href="css/vitronia-v2.css">
+  <link rel="stylesheet" href="css/academy.css">
+
+  <style>
+    /* ================================================================
+       KONTAKT PAGE — page-specific styles
+       ================================================================ */
+
+    .kontakt-hero {
+      padding-top: 7rem;
+      padding-bottom: 2rem;
+      text-align: center;
+    }
+
+    .kontakt-hero__title {
+      font-size: clamp(1.5rem, 4vw, 2.5rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      color: var(--text-primary);
+      margin: 0 0 1rem;
+    }
+
+    .kontakt-hero__subtitle {
+      font-size: 1.0625rem;
+      color: var(--text-secondary);
+      max-width: 560px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* ================================================================
+       INTEREST CARDS — 3 mutually exclusive options
+       ================================================================ */
+
+    .interest-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin: 3rem auto 0;
+      max-width: 960px;
+    }
+
+    @media (max-width: 767px) {
+      .interest-cards {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+    }
+
+    .interest-card {
+      position: relative;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      cursor: pointer;
+      transition:
+        border-color var(--transition),
+        box-shadow var(--transition),
+        transform var(--transition);
+      user-select: none;
+    }
+
+    .interest-card:hover {
+      border-color: rgba(99, 102, 241, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .interest-card.selected {
+      border-color: var(--accent);
+      box-shadow: 0 0 24px rgba(99, 102, 241, 0.2), inset 0 0 0 1px rgba(99, 102, 241, 0.15);
+    }
+
+    .interest-card__icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius);
+      background: var(--accent-soft);
+      color: var(--accent-hover);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      flex-shrink: 0;
+    }
+
+    .interest-card__icon svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .interest-card__title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0 0 0.5rem;
+      line-height: 1.3;
+    }
+
+    .interest-card__desc {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    /* Selected indicator dot */
+    .interest-card__radio {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid var(--border-active);
+      transition: border-color var(--transition), background var(--transition);
+    }
+
+    .interest-card.selected .interest-card__radio {
+      border-color: var(--accent);
+      background: var(--accent);
+      box-shadow: inset 0 0 0 3px var(--surface-2);
+    }
+
+    /* ================================================================
+       LEAD FORM
+       ================================================================ */
+
+    .lead-form-wrapper {
+      max-width: 560px;
+      margin: 3rem auto 0;
+    }
+
+    .lead-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.375rem;
+    }
+
+    .form-group label {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      letter-spacing: 0.02em;
+    }
+
+    .form-group label .required-mark {
+      color: var(--red);
+      margin-left: 0.125rem;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 0.9375rem;
+      transition: border-color var(--transition), box-shadow var(--transition);
+      outline: none;
+    }
+
+    .form-input::placeholder,
+    .form-textarea::placeholder {
+      color: var(--text-tertiary);
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    }
+
+    .form-select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      padding-right: 2.5rem;
+      cursor: pointer;
+    }
+
+    .form-textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    /* Conditional field groups */
+    .conditional-fields {
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                  opacity 0.3s ease,
+                  margin 0.3s ease;
+      margin-top: 0;
+    }
+
+    .conditional-fields.visible {
+      max-height: 500px;
+      opacity: 1;
+      margin-top: 0;
+    }
+
+    .conditional-fields__inner {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* Checkboxes */
+    .checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.625rem;
+    }
+
+    .checkbox-group__label {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      letter-spacing: 0.02em;
+      margin-bottom: 0.25rem;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      cursor: pointer;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border-active);
+      border-radius: 4px;
+      background: var(--surface-1);
+      cursor: pointer;
+      transition: border-color var(--transition), background var(--transition);
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .checkbox-item input[type="checkbox"]:checked {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .checkbox-item input[type="checkbox"]:checked::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 5px;
+      width: 4px;
+      height: 8px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    .checkbox-item input[type="checkbox"]:focus {
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    }
+
+    .checkbox-item span {
+      font-size: 0.9375rem;
+      color: var(--text-primary);
+    }
+
+    /* Submit button */
+    .form-submit {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.875rem 2.5rem;
+      background: var(--accent);
+      color: white;
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+      margin-top: 0.5rem;
+      align-self: flex-start;
+    }
+
+    .form-submit:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+    }
+
+    .form-submit:active {
+      transform: translateY(0);
+    }
+
+    .form-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .form-submit svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Spinner */
+    .form-submit .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      display: none;
+    }
+
+    .form-submit.loading .spinner {
+      display: block;
+    }
+
+    .form-submit.loading .submit-label {
+      display: none;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Error message */
+    .form-error {
+      background: var(--red-soft);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: var(--radius);
+      padding: 0.75rem 1rem;
+      font-size: 0.875rem;
+      color: var(--red);
+      display: none;
+    }
+
+    .form-error.visible {
+      display: block;
+    }
+
+    /* No-selection hint */
+    .form-hint {
+      text-align: center;
+      font-size: 0.875rem;
+      color: var(--text-tertiary);
+      padding: 1.5rem 0;
+      display: block;
+    }
+
+    .form-hint.hidden {
+      display: none;
+    }
+
+    /* ================================================================
+       SUCCESS STATE
+       ================================================================ */
+
+    .success-message {
+      text-align: center;
+      padding: 3rem 1rem;
+      display: none;
+    }
+
+    .success-message.visible {
+      display: block;
+    }
+
+    .success-message__icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--green-soft);
+      color: var(--green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+    }
+
+    .success-message__icon svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    .success-message__title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0 0 0.75rem;
+    }
+
+    .success-message__text {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* ================================================================
+       PRODUCT SHOWCASE
+       ================================================================ */
+
+    .product-showcase {
+      padding-top: 5rem;
+    }
+
+    .product-category {
+      margin-bottom: 3rem;
+    }
+
+    .product-category:last-child {
+      margin-bottom: 0;
+    }
+
+    .product-category__header {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .product-category__label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      white-space: nowrap;
+    }
+
+    .product-category__label--green {
+      color: var(--green);
+    }
+
+    .product-category__line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .product-grid--two {
+      grid-template-columns: repeat(2, 1fr);
+      max-width: 640px;
+    }
+
+    @media (max-width: 767px) {
+      .product-grid,
+      .product-grid--two {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .product-card {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      text-decoration: none;
+      transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .product-card:hover {
+      border-color: rgba(99, 102, 241, 0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .product-card__icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      flex-shrink: 0;
+    }
+
+    .product-card__icon svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .product-card__icon--finance {
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .product-card__icon--esg {
+      background: var(--cyan-soft);
+      color: var(--cyan);
+    }
+
+    .product-card__icon--shadow-ic {
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+
+    .product-card__title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0 0 0.5rem;
+    }
+
+    .product-card__desc {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      margin: 0;
+      flex: 1;
+    }
+
+    .product-card__link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--accent-hover);
+      margin-top: 1rem;
+      text-decoration: none;
+      transition: gap var(--transition);
+    }
+
+    .product-card:hover .product-card__link {
+      gap: 0.625rem;
+    }
+
+    .product-card__link svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* ================================================================
+       FOOTER (reuse from index)
+       ================================================================ */
+
+    .site-footer {
+      border-top: 1px solid var(--border);
+      padding: 3rem 0 2rem;
+      margin-top: 4rem;
+    }
+
+    .site-footer__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+
+    .site-footer__brand {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      text-decoration: none;
+    }
+
+    .site-footer__logo {
+      width: 28px;
+      height: 28px;
+      color: var(--accent-hover);
+    }
+
+    .site-footer__wordmark {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    .site-footer__links {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      flex-wrap: wrap;
+    }
+
+    .site-footer__link {
+      font-size: 0.8125rem;
+      color: var(--text-tertiary);
+      text-decoration: none;
+      transition: color var(--transition-fast);
+    }
+
+    .site-footer__link:hover {
+      color: var(--text-primary);
+    }
+
+    .site-footer__copy {
+      width: 100%;
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 600px) {
+      .site-footer__inner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    /* ================================================================
+       SECTION HEADER (reuse from index)
+       ================================================================ */
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .section-header__eyebrow {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent-hover);
+      margin-bottom: 0.75rem;
+    }
+
+    .section-header__title {
+      font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      margin: 0 0 1rem;
+      color: var(--text-primary);
+    }
+
+    .section-header__subtitle {
+      font-size: 1.0625rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================================================================
+       NAVIGATION
+       ================================================================ -->
+  <nav class="academy-nav" role="navigation" aria-label="Huvudnavigering">
+    <div class="academy-nav__inner">
+      <a href="index.html" class="academy-nav__brand">
+        <svg class="academy-nav__brand-logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c3.87 0 7 3.13 7 7s-3.13 7-7 7-7-3.13-7-7 3.13-7 7-7zm0 3c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 3c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z" fill="currentColor" opacity="0.9"/>
+        </svg>
+        <span class="academy-nav__brand-name">AI</span>
+        <span class="academy-nav__brand-sep">/</span>
+        <span class="academy-nav__brand-name" style="color: var(--accent-hover);">Academy</span>
+      </a>
+      <ul class="academy-nav__links">
+        <li><a href="index.html" class="academy-nav__link">Översikt</a></li>
+        <li><a href="reveal.html" class="academy-nav__link">Modul 0</a></li>
+        <li><a href="cowork.html" class="academy-nav__link">Modul 1</a></li>
+        <li><a href="rapport.html" class="academy-nav__link">Modul 2</a></li>
+        <li><a href="automation.html" class="academy-nav__link">Modul 3</a></li>
+        <li><a href="claude-code.html" class="academy-nav__link">Modul 4</a></li>
+        <li><a href="transformation.html" class="academy-nav__link">Advisory</a></li>
+      </ul>
+      <button class="academy-nav__hamburger" aria-label="Meny" aria-expanded="false" onclick="this.setAttribute('aria-expanded', this.getAttribute('aria-expanded')==='false');document.getElementById('mobile-drawer').classList.toggle('open');">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile drawer -->
+  <div class="academy-nav__mobile-drawer" id="mobile-drawer">
+    <a href="index.html" class="academy-nav__mobile-link">Översikt</a>
+    <a href="reveal.html" class="academy-nav__mobile-link">Modul 0 — Reveal</a>
+    <a href="cowork.html" class="academy-nav__mobile-link">Modul 1 — Cowork</a>
+    <a href="rapport.html" class="academy-nav__mobile-link">Modul 2 — Rapport</a>
+    <a href="automation.html" class="academy-nav__mobile-link">Modul 3 — Plugins</a>
+    <a href="claude-code.html" class="academy-nav__mobile-link">Modul 4 — Claude Code</a>
+    <a href="transformation.html" class="academy-nav__mobile-link">Advisory</a>
+  </div>
+
+  <main>
+
+    <!-- ================================================================
+         1. HERO
+         ================================================================ -->
+    <section class="kontakt-hero section" aria-label="Kontakt">
+      <div class="container--wide">
+        <h1 class="kontakt-hero__title animate-on-scroll">
+          Du har genomfört <span class="gradient-text">AI Academy</span>.<br>
+          Vad vill du göra härnäst?
+        </h1>
+        <p class="kontakt-hero__subtitle animate-on-scroll" data-delay="80">
+          Välj det alternativ som passar dig bäst, så hör vi av oss.
+        </p>
+      </div>
+    </section>
+
+
+    <!-- ================================================================
+         2. INTEREST CARDS + FORM
+         ================================================================ -->
+    <section class="section" style="padding-top: 0;" aria-label="Intresseanmälan">
+      <div class="container--wide">
+
+        <!-- Three option cards -->
+        <div class="interest-cards animate-on-scroll" data-delay="120" role="radiogroup" aria-label="Välj intresse">
+
+          <!-- Card 1: AI Transformation -->
+          <div class="interest-card" data-interest="transformation" role="radio" aria-checked="false" tabindex="0">
+            <div class="interest-card__radio" aria-hidden="true"></div>
+            <div class="interest-card__icon" style="background: rgba(6, 182, 212, 0.12); color: var(--cyan);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+              </svg>
+            </div>
+            <h3 class="interest-card__title">AI Transformation Advisory</h3>
+            <p class="interest-card__desc">Rådgivning kring AI-transformation: arbetsflöden, ledarskap och adoption. Vi hjälper er gå från strategi till produktion.</p>
+          </div>
+
+          <!-- Card 2: Agentsystem (merged: kurs + samtal) -->
+          <div class="interest-card" data-interest="agentsystem" role="radio" aria-checked="false" tabindex="0">
+            <div class="interest-card__radio" aria-hidden="true"></div>
+            <div class="interest-card__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/>
+              </svg>
+            </div>
+            <h3 class="interest-card__title">Agentsystem &amp; Claude Code</h3>
+            <p class="interest-card__desc">Avancerad kurs om agentbyggande, skräddarsydda agentsystem eller rådgivning kring Claude Code.</p>
+          </div>
+
+          <!-- Card 3: Demo -->
+          <div class="interest-card" data-interest="demo" role="radio" aria-checked="false" tabindex="0">
+            <div class="interest-card__radio" aria-hidden="true"></div>
+            <div class="interest-card__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+              </svg>
+            </div>
+            <h3 class="interest-card__title">Boka demo av våra produkter</h3>
+            <p class="interest-card__desc">Se Finance Portal, ESG Portal eller Shadow IC i aktion.</p>
+          </div>
+
+        </div>
+
+        <!-- Lead form -->
+        <div class="lead-form-wrapper animate-on-scroll" data-delay="200">
+
+          <!-- Hint before selection -->
+          <p class="form-hint" id="formHint">Välj ett alternativ ovan för att fortsätta.</p>
+
+          <!-- The form -->
+          <form class="lead-form" id="leadForm" style="display: none;" novalidate>
+
+            <!-- Always visible: Namn -->
+            <div class="form-group">
+              <label for="field-name">Namn <span class="required-mark" aria-label="obligatoriskt">*</span></label>
+              <input type="text" id="field-name" name="name" class="form-input" required autocomplete="name" placeholder="Ditt namn">
+            </div>
+
+            <!-- Always visible: E-post -->
+            <div class="form-group">
+              <label for="field-email">E-post <span class="required-mark" aria-label="obligatoriskt">*</span></label>
+              <input type="email" id="field-email" name="email" class="form-input" required autocomplete="email" placeholder="namn@företag.se">
+            </div>
+
+            <!-- Conditional: Företag + Roll (options 2 & 3) -->
+            <div class="conditional-fields" id="fieldsCompanyRole">
+              <div class="conditional-fields__inner">
+                <div class="form-group">
+                  <label for="field-company">Företag <span class="required-mark" aria-label="obligatoriskt">*</span></label>
+                  <input type="text" id="field-company" name="company" class="form-input" autocomplete="organization" placeholder="Företagsnamn">
+                </div>
+                <div class="form-group">
+                  <label for="field-role">Roll <span class="required-mark" aria-label="obligatoriskt">*</span></label>
+                  <select id="field-role" name="role" class="form-select">
+                    <option value="" disabled selected>Välj din roll</option>
+                    <option value="VD">VD</option>
+                    <option value="CFO">CFO</option>
+                    <option value="HR-chef">HR-chef</option>
+                    <option value="IT-chef">IT-chef</option>
+                    <option value="Projektledare">Projektledare</option>
+                    <option value="Controller">Controller</option>
+                    <option value="Annat">Annat</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Conditional: Product interest checkboxes (option 3 only) -->
+            <div class="conditional-fields" id="fieldsProducts">
+              <div class="conditional-fields__inner">
+                <div class="checkbox-group">
+                  <span class="checkbox-group__label">Intresserad av</span>
+                  <label class="checkbox-item">
+                    <input type="checkbox" name="interests" value="Finance Portal">
+                    <span>Finance Portal</span>
+                  </label>
+                  <label class="checkbox-item">
+                    <input type="checkbox" name="interests" value="ESG Portal">
+                    <span>ESG Portal</span>
+                  </label>
+                  <label class="checkbox-item">
+                    <input type="checkbox" name="interests" value="Shadow IC">
+                    <span>Shadow IC</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Always visible: Meddelande -->
+            <div class="form-group">
+              <label for="field-message">Meddelande</label>
+              <textarea id="field-message" name="message" class="form-textarea" placeholder="Beskriv gärna vad ni arbetar med idag..."></textarea>
+            </div>
+
+            <!-- Error message -->
+            <div class="form-error" id="formError" role="alert"></div>
+
+            <!-- Submit -->
+            <button type="submit" class="form-submit" id="formSubmit">
+              <span class="submit-label">Skicka</span>
+              <div class="spinner" aria-hidden="true"></div>
+              <svg class="submit-label" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+
+          </form>
+
+          <!-- Success message -->
+          <div class="success-message" id="successMessage">
+            <div class="success-message__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+            </div>
+            <h2 class="success-message__title">Tack!</h2>
+            <p class="success-message__text">Vi hör av oss inom 2 arbetsdagar.</p>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- Product showcase removed for brandless version -->
+
+  </main>
+
+
+  <!-- ================================================================
+       FOOTER
+       ================================================================ -->
+  <footer class="site-footer">
+    <div class="container--wide">
+      <div class="site-footer__inner">
+
+        <a href="index.html" class="site-footer__brand" target="_blank" rel="noopener">
+          <svg class="site-footer__logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c3.87 0 7 3.13 7 7s-3.13 7-7 7-7-3.13-7-7 3.13-7 7-7zm0 3c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 3c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z" fill="currentColor"/>
+          </svg>
+          <span class="site-footer__wordmark">AI Academy</span>
+        </a>
+
+        <ul class="site-footer__links">
+          <li><a href="index.html" class="site-footer__link">Academy</a></li>
+          <li><a href="transformation.html" class="site-footer__link">Advisory</a></li>
+          <li><a href="#" class="site-footer__link">Kontakt</a></li>
+        </ul>
+
+      </div>
+      <p class="site-footer__copy">&copy; 2026 AI Academy. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="js/academy.js"></script>
+
+  <!-- ================================================================
+       INLINE FORM LOGIC
+       ================================================================ -->
+  <script>
+  (function() {
+    'use strict';
+
+    // --- DOM refs ---
+    const cards = document.querySelectorAll('.interest-card');
+    const form = document.getElementById('leadForm');
+    const formHint = document.getElementById('formHint');
+    const formError = document.getElementById('formError');
+    const formSubmit = document.getElementById('formSubmit');
+    const successMessage = document.getElementById('successMessage');
+    const fieldsCompanyRole = document.getElementById('fieldsCompanyRole');
+    const fieldsProducts = document.getElementById('fieldsProducts');
+
+    // Input refs
+    const nameInput = document.getElementById('field-name');
+    const emailInput = document.getElementById('field-email');
+    const companyInput = document.getElementById('field-company');
+    const roleSelect = document.getElementById('field-role');
+    const messageInput = document.getElementById('field-message');
+    const interestCheckboxes = document.querySelectorAll('input[name="interests"]');
+
+    let selectedInterest = null;
+
+    // --- Card selection ---
+    function selectCard(interest) {
+      selectedInterest = interest;
+
+      // Update card states
+      cards.forEach(function(card) {
+        const isSelected = card.dataset.interest === interest;
+        card.classList.toggle('selected', isSelected);
+        card.setAttribute('aria-checked', String(isSelected));
+      });
+
+      // Show form, hide hint
+      form.style.display = 'flex';
+      formHint.classList.add('hidden');
+
+      // Toggle conditional fields based on selection
+      var showCompanyRole = (interest === 'transformation' || interest === 'agentsystem' || interest === 'demo');
+      var showProducts = (interest === 'demo');
+
+      fieldsCompanyRole.classList.toggle('visible', showCompanyRole);
+      fieldsProducts.classList.toggle('visible', showProducts);
+
+      // Update required attributes dynamically
+      companyInput.required = showCompanyRole;
+      roleSelect.required = showCompanyRole;
+
+      // Clear error
+      hideError();
+    }
+
+    // Card click handlers
+    cards.forEach(function(card) {
+      card.addEventListener('click', function() {
+        selectCard(card.dataset.interest);
+      });
+
+      // Keyboard support
+      card.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          selectCard(card.dataset.interest);
+        }
+      });
+    });
+
+    // --- URL parameter pre-selection ---
+    function readUrlParams() {
+      var params = new URLSearchParams(window.location.search);
+      var interest = params.get('interest');
+      // Map legacy claude-code param to merged agentsystem card
+      if (interest === 'claude-code') interest = 'agentsystem';
+      if (interest && ['transformation', 'agentsystem', 'demo'].indexOf(interest) !== -1) {
+        selectCard(interest);
+
+        // Smooth scroll to cards
+        var cardsSection = document.querySelector('.interest-cards');
+        if (cardsSection) {
+          setTimeout(function() {
+            cardsSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 300);
+        }
+      }
+    }
+
+    readUrlParams();
+
+    // --- Validation ---
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    function showError(msg) {
+      formError.textContent = msg;
+      formError.classList.add('visible');
+    }
+
+    function hideError() {
+      formError.textContent = '';
+      formError.classList.remove('visible');
+    }
+
+    function validateForm() {
+      hideError();
+
+      if (!selectedInterest) {
+        showError('Välj ett alternativ ovan.');
+        return false;
+      }
+
+      var name = nameInput.value.trim();
+      var email = emailInput.value.trim();
+
+      if (!name) {
+        showError('Ange ditt namn.');
+        nameInput.focus();
+        return false;
+      }
+
+      if (!email) {
+        showError('Ange din e-postadress.');
+        emailInput.focus();
+        return false;
+      }
+
+      if (!isValidEmail(email)) {
+        showError('Ange en giltig e-postadress.');
+        emailInput.focus();
+        return false;
+      }
+
+      // Conditional required fields
+      if (selectedInterest === 'transformation' || selectedInterest === 'agentsystem' || selectedInterest === 'demo') {
+        if (!companyInput.value.trim()) {
+          showError('Ange företagsnamn.');
+          companyInput.focus();
+          return false;
+        }
+        if (!roleSelect.value) {
+          showError('Välj din roll.');
+          roleSelect.focus();
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    // --- Build payload ---
+    function buildPayload() {
+      var payload = {
+        name: nameInput.value.trim(),
+        email: emailInput.value.trim(),
+        interest_type: selectedInterest,
+        source: 'academy'
+      };
+
+      if (selectedInterest === 'transformation' || selectedInterest === 'agentsystem' || selectedInterest === 'demo') {
+        payload.company = companyInput.value.trim();
+        payload.role = roleSelect.value;
+      }
+
+      if (selectedInterest === 'demo') {
+        var checked = [];
+        interestCheckboxes.forEach(function(cb) {
+          if (cb.checked) checked.push(cb.value);
+        });
+        payload.interests = checked;
+      }
+
+      var message = messageInput.value.trim();
+      if (message) {
+        payload.message = message;
+      }
+
+      return payload;
+    }
+
+    // --- Submit ---
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      if (!validateForm()) return;
+
+      // Disable and show spinner
+      formSubmit.disabled = true;
+      formSubmit.classList.add('loading');
+      hideError();
+
+      var payload = buildPayload();
+
+      fetch('
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then(function(response) {
+        if (!response.ok) {
+          throw new Error('Server svarade med status ' + response.status);
+        }
+        return response.json();
+      })
+      .then(function() {
+        // Success — hide form, show confirmation
+        form.style.display = 'none';
+        formHint.style.display = 'none';
+        successMessage.classList.add('visible');
+
+        // Disable card interaction
+        cards.forEach(function(card) {
+          card.style.pointerEvents = 'none';
+          card.style.opacity = '0.5';
+        });
+      })
+      .catch(function(err) {
+        showError('Något gick fel. Försök igen eller kontakta oss.');
+        console.error('Lead form error:', err);
+      })
+      .finally(function() {
+        formSubmit.disabled = false;
+        formSubmit.classList.remove('loading');
+      });
+    });
+
+  })();
+  </script>
+
+</body>
+</html>

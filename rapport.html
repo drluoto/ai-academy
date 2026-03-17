@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modul 2 — Rapport med context engineering | AI Academy</title>
+
+  <!-- OG / Social -->
+  <meta property="og:title" content="Modul 2 — Rapport med context engineering | AI Academy">
+  <meta property="og:description" content="Bygg en rapport från grunden med context engineering. Lär dig varför kontext är nyckeln till kvalitet.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="./og-image.png">  <meta property="og:url" content="./rapport.html">
+  <meta name="description" content="Modul 2 i AI Academy: Bygg en rapport från grunden med context engineering. 25 minuter, hands-on.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Design system + Academy layer -->
+  <link rel="stylesheet" href="css/vitronia-v2.css">
+  <link rel="stylesheet" href="css/academy.css">
+
+  <style>
+    /* ================================================================
+       MODUL 2 — page-specific styles
+       ================================================================ */
+
+    /* --- Mockup: Claude working interface --- */
+    .claude-mockup {
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      margin: 2rem 0;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35);
+    }
+
+    .claude-mockup__toolbar {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1.25rem;
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .claude-mockup__dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .claude-mockup__dots span {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .claude-mockup__dots span:nth-child(1) { background: #EF4444; }
+    .claude-mockup__dots span:nth-child(2) { background: #F59E0B; }
+    .claude-mockup__dots span:nth-child(3) { background: #10B981; }
+
+    .claude-mockup__title {
+      font-size: 0.8125rem;
+      color: var(--text-tertiary);
+      font-weight: 500;
+    }
+
+    .claude-mockup__body {
+      padding: 1.5rem;
+    }
+
+    /* Progress steps inside Claude mockup */
+    .claude-progress {
+      display: flex;
+      flex-direction: column;
+      gap: 0.875rem;
+    }
+
+    .claude-progress__step {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .claude-progress__icon {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    .claude-progress__icon--done { color: var(--green); }
+    .claude-progress__icon--active { color: var(--accent-hover); animation: pulse-glow 1.5s ease-in-out infinite; }
+    .claude-progress__icon--pending { color: var(--text-tertiary); opacity: 0.4; }
+
+    @keyframes pulse-glow {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    /* --- Report mockup --- */
+    .report-mockup {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin: 2rem 0;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+      color: #1a1a2e;
+    }
+
+    .report-mockup__header {
+      background: #222D59;
+      color: #ffffff;
+      padding: 1.5rem 2rem;
+    }
+
+    .report-mockup__header h4 {
+      margin: 0;
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+    }
+
+    .report-mockup__header p {
+      margin: 0.375rem 0 0;
+      font-size: 0.8125rem;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .report-mockup__body {
+      padding: 1.5rem 2rem 2rem;
+    }
+
+    .report-mockup__body h5 {
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: #222D59;
+      margin: 1.25rem 0 0.625rem;
+      letter-spacing: 0;
+    }
+
+    .report-mockup__body h5:first-child {
+      margin-top: 0;
+    }
+
+    .report-mockup__body p {
+      font-size: 0.8125rem;
+      color: #4a4a6a;
+      line-height: 1.6;
+      margin: 0 0 0.5rem;
+    }
+
+    .report-mockup__body ul {
+      padding-left: 1.25rem;
+      margin: 0.5rem 0 1rem;
+    }
+
+    .report-mockup__body li {
+      font-size: 0.8125rem;
+      color: #4a4a6a;
+      line-height: 1.55;
+      margin-bottom: 0.25rem;
+    }
+
+    .report-mockup__body li strong {
+      color: #222D59;
+    }
+
+    /* Mini table inside report */
+    .report-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      margin: 0.75rem 0 1rem;
+    }
+
+    .report-table th {
+      background: #222D59;
+      color: #ffffff;
+      font-weight: 600;
+      text-align: left;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.03em;
+    }
+
+    .report-table td {
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid #e5e7eb;
+      color: #4a4a6a;
+    }
+
+    .report-table tr:nth-child(even) td {
+      background: #f8fafc;
+    }
+
+    .report-table .delta-positive {
+      color: #2FAA51;
+      font-weight: 600;
+    }
+
+    .report-table .delta-negative {
+      color: #E63946;
+      font-weight: 600;
+    }
+
+    /* --- Version iteration cards --- */
+    .iteration-track {
+      display: flex;
+      gap: 1rem;
+      margin: 2rem 0;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+
+    .iteration-card {
+      flex: 1;
+      min-width: 220px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      position: relative;
+    }
+
+    .iteration-card__version {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent-hover);
+      background: rgba(99, 102, 241, 0.12);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      margin-bottom: 0.75rem;
+    }
+
+    .iteration-card__title {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0 0 0.5rem;
+    }
+
+    .iteration-card__desc {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    .iteration-card__arrow {
+      display: none;
+    }
+
+    @media (min-width: 769px) {
+      .iteration-card__arrow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        right: -1.25rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 28px;
+        height: 28px;
+        background: var(--surface-3);
+        border: 1px solid var(--border);
+        border-radius: 50%;
+        color: var(--text-tertiary);
+        z-index: 2;
+      }
+
+      .iteration-card__arrow svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      .iteration-card:last-child .iteration-card__arrow {
+        display: none;
+      }
+    }
+
+    /* --- Plugin marketplace mockup --- */
+    .plugin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.875rem;
+      margin: 1.5rem 0;
+    }
+
+    .plugin-card {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.125rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+
+    .plugin-card--highlight {
+      border-color: rgba(99, 102, 241, 0.5);
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.15);
+      background: rgba(99, 102, 241, 0.06);
+    }
+
+    .plugin-card__icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface-3);
+      color: var(--text-secondary);
+    }
+
+    .plugin-card--highlight .plugin-card__icon {
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--accent-hover);
+    }
+
+    .plugin-card__icon svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .plugin-card__name {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .plugin-card--highlight .plugin-card__name {
+      color: var(--accent-hover);
+    }
+
+    .plugin-card__desc {
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+      line-height: 1.45;
+    }
+
+    /* --- Checklist (interactive) --- */
+    .checklist {
+      list-style: none;
+      padding: 0;
+      margin: 1rem 0;
+    }
+
+    .checklist__item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: color var(--transition-fast);
+      user-select: none;
+    }
+
+    .checklist__item:last-child {
+      border-bottom: none;
+    }
+
+    .checklist__item input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border);
+      border-radius: 4px;
+      flex-shrink: 0;
+      margin-top: 0.125rem;
+      cursor: pointer;
+      transition: background var(--transition-fast), border-color var(--transition-fast);
+      position: relative;
+    }
+
+    .checklist__item input[type="checkbox"]:checked {
+      background: var(--green);
+      border-color: var(--green);
+    }
+
+    .checklist__item input[type="checkbox"]:checked::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 5px;
+      width: 5px;
+      height: 9px;
+      border: solid #fff;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    .checklist__item:has(input:checked) {
+      color: var(--text-tertiary);
+      text-decoration: line-through;
+      text-decoration-color: var(--text-tertiary);
+    }
+
+    /* --- Insight highlight box --- */
+    .insight-box {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(139, 92, 246, 0.08));
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: var(--radius-xl);
+      padding: 2rem 2.25rem;
+      margin: 2.5rem 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .insight-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), #a78bfa, #60a5fa);
+    }
+
+    .insight-box__label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-hover);
+      margin-bottom: 0.875rem;
+    }
+
+    .insight-box__label svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .insight-box__text {
+      font-size: 1.0625rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    /* --- Module prev/next footer --- */
+    .module-footer-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: stretch;
+      gap: 1rem;
+      margin: 3rem 0 0;
+      padding-top: 2.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .module-footer-nav__link {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      text-decoration: none;
+      padding: 1rem 1.25rem;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      transition: border-color var(--transition), box-shadow var(--transition);
+      flex: 1;
+      max-width: 280px;
+    }
+
+    .module-footer-nav__link:hover {
+      border-color: rgba(99, 102, 241, 0.4);
+      box-shadow: 0 4px 16px rgba(99, 102, 241, 0.1);
+    }
+
+    .module-footer-nav__link--next {
+      text-align: right;
+      margin-left: auto;
+    }
+
+    .module-footer-nav__dir {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-tertiary);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .module-footer-nav__title {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--accent-hover);
+    }
+
+    /* --- Report version badge --- */
+    .version-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.625rem;
+      border-radius: 99px;
+      background: rgba(99, 102, 241, 0.12);
+      color: var(--accent-hover);
+      margin-bottom: 0.5rem;
+    }
+
+    .version-label--final {
+      background: rgba(16, 185, 129, 0.12);
+      color: var(--green);
+    }
+
+    /* --- Responsive --- */
+    @media (max-width: 768px) {
+      .iteration-track {
+        flex-direction: column;
+      }
+
+      .iteration-card {
+        min-width: auto;
+      }
+
+      .plugin-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .module-footer-nav {
+        flex-direction: column;
+      }
+
+      .module-footer-nav__link {
+        max-width: none;
+      }
+
+      .module-footer-nav__link--next {
+        text-align: left;
+      }
+
+      .report-mockup__header {
+        padding: 1.25rem 1.25rem;
+      }
+
+      .report-mockup__body {
+        padding: 1.25rem;
+      }
+
+      .insight-box {
+        padding: 1.5rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .plugin-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================================================================
+       NAVIGATION
+       ================================================================ -->
+  <nav class="academy-nav" role="navigation" aria-label="Huvudnavigering">
+    <div class="academy-nav__inner">
+      <a href="index.html" class="academy-nav__brand">
+        <svg class="academy-nav__brand-logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c3.87 0 7 3.13 7 7s-3.13 7-7 7-7-3.13-7-7 3.13-7 7-7zm0 3c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 3c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z" fill="currentColor" opacity="0.9"/>
+        </svg>
+        <span class="academy-nav__brand-name">AI</span>
+        <span class="academy-nav__brand-sep">/</span>
+        <span class="academy-nav__brand-name" style="color: var(--accent-hover);">Academy</span>
+      </a>
+      <ul class="academy-nav__links">
+        <li><a href="index.html" class="academy-nav__link">Översikt</a></li>
+        <li><a href="reveal.html" class="academy-nav__link">Modul 0</a></li>
+        <li><a href="cowork.html" class="academy-nav__link">Modul 1</a></li>
+        <li><a href="rapport.html" class="academy-nav__link active">Modul 2</a></li>
+        <li><a href="automation.html" class="academy-nav__link">Modul 3</a></li>
+        <li><a href="claude-code.html" class="academy-nav__link">Modul 4</a></li>
+        <li><a href="transformation.html" class="academy-nav__link">Advisory</a></li>
+      </ul>
+      <button class="academy-nav__hamburger" aria-label="Meny" aria-expanded="false" onclick="this.setAttribute('aria-expanded', this.getAttribute('aria-expanded')==='false');document.getElementById('mobile-drawer').classList.toggle('open');">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile drawer -->
+  <div class="academy-nav__mobile-drawer" id="mobile-drawer">
+    <a href="index.html" class="academy-nav__mobile-link">Översikt</a>
+    <a href="reveal.html" class="academy-nav__mobile-link">Modul 0 — Reveal</a>
+    <a href="cowork.html" class="academy-nav__mobile-link">Modul 1 — Cowork</a>
+    <a href="rapport.html" class="academy-nav__mobile-link active">Modul 2 — Rapport</a>
+    <a href="automation.html" class="academy-nav__mobile-link">Modul 3 — Plugins</a>
+    <a href="claude-code.html" class="academy-nav__mobile-link">Modul 4 — Claude Code</a>
+    <a href="transformation.html" class="academy-nav__mobile-link">Advisory</a>
+  </div>
+
+  <!-- Progress bar -->
+  <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+
+  <main>
+
+    <!-- ================================================================
+         HERO
+         ================================================================ -->
+    <section class="hero section" aria-label="Modul 2 Introduktion">
+      <div class="container" style="text-align: center;">
+
+        <div class="hero__eyebrow animate-on-scroll">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Modul 2 — 25 min
+        </div>
+
+        <h1 class="hero__title animate-on-scroll" data-delay="80">
+          Rapport med <span class="gradient-text">context engineering</span>
+        </h1>
+
+        <p class="hero__subtitle animate-on-scroll" data-delay="160">
+          Skillnaden mellan en OK rapport och en bra rapport är inte verktyget — det är hur du beskriver uppgiften.
+        </p>
+
+        <div class="hero__meta animate-on-scroll" data-delay="240">
+          <span class="hero__meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            25 min
+          </span>
+          <span class="hero__meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            Hands-on
+          </span>
+          <span class="hero__meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            Bygger på Modul 1
+          </span>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ================================================================
+         INTRO
+         ================================================================ -->
+    <section class="section" data-section="intro">
+      <div class="container">
+
+        <p class="lead animate-on-scroll">
+          I första modulen fick du en tabell. Nu bygger vi en hel rapport — och lär oss varför kontext är nyckeln till kvalitet.
+        </p>
+
+      </div>
+    </section>
+
+
+    <!-- ================================================================
+         2.1 — CONTEXT FIRST
+         ================================================================ -->
+    <section class="section" data-section="context" aria-label="Beskriv vem du är">
+      <div class="container">
+
+        <span class="section-label animate-on-scroll">2.1 — 5 min</span>
+        <h2 class="animate-on-scroll" data-delay="60">Beskriv vem du är</h2>
+
+        <p class="animate-on-scroll" data-delay="100">
+          Innan du ger Claude en uppgift behöver du besvara en enkel fråga: <strong>vem är du, och vem ska läsa resultatet?</strong> Det gör du genom att skapa två kontextfiler som ligger i samma mapp som din data.
+        </p>
+
+        <p class="animate-on-scroll" data-delay="120">
+          Båda filerna finns i övnings-ZIP:en från Modul 1. Öppna dem och anpassa till ditt företag — eller använd exemplen rakt av för att öva.
+        </p>
+
+        <!-- kontext.md -->
+        <h4 class="animate-on-scroll" data-delay="140" style="margin-top: 2rem;">kontext.md</h4>
+        <div class="code-block animate-on-scroll" data-delay="160">
+          <button class="code-copy-btn" aria-label="Kopiera kod">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Kopiera
+          </button>
+          <pre><code class="code-content">Du är analytiker på ett medelstort företag med 200 anställda.
+Vår tonalitet är professionell men tillgänglig.
+Målgruppen är ledningsgruppen — de vill ha slutsatser, inte rådata.
+Vi värderar tydlighet och handlingsbara insikter.</code></pre>
+        </div>
+
+        <!-- grafisk_profil.md -->
+        <h4 class="animate-on-scroll" data-delay="180">grafisk_profil.md</h4>
+        <div class="code-block animate-on-scroll" data-delay="200">
+          <button class="code-copy-btn" aria-label="Kopiera kod">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Kopiera
+          </button>
+          <pre><code class="code-content">Primärfärg: #222D59 (mörkblå)
+Sekundärfärg: #2FAA51 (grön för positiva tal)
+Varningsfärg: #E63946 (röd för negativa avvikelser)
+Typsnitt: Sans-serif (t.ex. Calibri eller Arial)
+Rubriker: Korta, max 6 ord
+Tabeller: Vit bakgrund, mörkblå headers, alternerande radfärger
+Diagram: Använd primär- och sekundärfärg, alltid med legend</code></pre>
+        </div>
+
+        <!-- BEFORE / AFTER -->
+        <h4 class="animate-on-scroll" style="margin-top: 2.5rem;">Varför spelar det roll?</h4>
+        <p class="animate-on-scroll">Samma data, samma verktyg — men väldig skillnad i output:</p>
+
+        <div class="comparison animate-on-scroll" data-delay="80">
+          <!-- Before -->
+          <div class="comparison__panel comparison__panel--before">
+            <div class="comparison__label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+              Utan kontext
+            </div>
+            <div class="comparison__content">
+              <p style="margin:0 0 0.5rem; font-weight: 600; color: var(--text-primary);">Generisk rapport</p>
+              <p style="margin:0 0 0.75rem;">Intäkterna ökade med 12%. Kostnaderna ökade med 8%. Vinsten ökade med 4%. Här är en tabell med alla siffror...</p>
+              <p style="margin:0; font-size: 0.8rem; font-style: italic; opacity: 0.7;">Ingen struktur. Ingen prioritering. Ingen insikt om vad ledningen behöver veta.</p>
+            </div>
+          </div>
+
+          <!-- Arrow divider -->
+          <div class="comparison__divider" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+          </div>
+
+          <!-- After -->
+          <div class="comparison__panel comparison__panel--after">
+            <div class="comparison__label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              Med kontext
+            </div>
+            <div class="comparison__content">
+              <p style="margin:0 0 0.5rem; font-weight: 600; color: var(--text-primary);">Beslutsunderlag för LG</p>
+              <p style="margin:0 0 0.75rem;"><strong>Tre avvikelser kräver beslut:</strong> Personalkostnader +340 TSEK, IT-investeringar -280 TSEK förra kvartalet, marknadsbudget underutnyttjad. Rekommendation: omallokera 150 TSEK från marknad till IT.</p>
+              <p style="margin:0; font-size: 0.8rem; font-style: italic; opacity: 0.7;">Rätt ton, rätt detaljer, rätt slutsatser för målgruppen.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ================================================================
+         2.2 — GE UPPGIFTEN
+         ================================================================ -->
+    <section class="section" data-section="prompt" aria-label="Prompten som gör skillnad">
+      <div class="container">
+
+        <span class="section-label animate-on-scroll">2.2 — 8 min</span>
+        <h2 class="animate-on-scroll" data-delay="60">Prompten som gör skillnad</h2>
+
+        <p class="animate-on-scroll" data-delay="100">
+          Nu har du kontextfilerna. Här är prompten du skriver i Claude Desktop — notera hur du refererar till filerna, ger en tydlig uppgift, och bestämmer format:
+        </p>
+
+        <div class="code-block animate-on-scroll" data-delay="140">
+          <button class="code-copy-btn" aria-label="Kopiera kod">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Kopiera
+          </button>
+          <pre><code class="code-content">Läs kontext.md och grafisk_profil.md.
+Analysera kvartalsdata.xlsx — identifiera de tre största avvikelserna mot budget.
+För varje avvikelse: förklara trolig orsak och implikation.
+Skriv ett beslutsunderlag för ledningsgruppen.
+Max 1 sida. Börja med slutsatserna.
+Följ vår grafiska profil.</code></pre>
+        </div>
+
+        <p class="animate-on-scroll" data-delay="160">
+          Tryck Enter. Claude läser filerna, analyserar datan, och börjar skriva. Så här ser det ut:
+        </p>
+
+        <!-- Screenshot: Claude Cowork processing with progress panel -->
+        <div class="screenshot-frame screenshot-frame--zoomable animate-on-scroll" data-delay="200">
+          <picture>
+            <source srcset="screenshots/cowork-07-result.webp" type="image/webp">
+            <img src="screenshots/cowork-07-result.png"
+                 alt="Claude Desktop Cowork arbetar — progresspanel visar läsning, analys och rapportgenerering"
+                 loading="lazy"
+                 class="screenshot-frame__img">
+          </picture>
+          <div class="screenshot-annotation" style="top: 6%; right: 3%;">
+            <span class="screenshot-annotation__text">Stegen visas i realtid</span>
+            <span class="screenshot-annotation__marker">1</span>
+          </div>
+          <div class="screenshot-annotation" style="top: 58%; right: 3%;">
+            <span class="screenshot-annotation__text">Kontextfiler laddas automatiskt</span>
+            <span class="screenshot-annotation__marker">2</span>
+          </div>
+        </div>
+
+        <!-- Output: report mockup -->
+        <p class="animate-on-scroll" style="margin-top: 2.5rem;">
+          Och här är resultatet — en rapport som följer din grafiska profil och är skriven för din målgrupp:
+        </p>
+
+        <div class="report-mockup animate-on-scroll" data-delay="100">
+          <div class="report-mockup__header">
+            <h4>Kvartalsrapport Q4 2025</h4>
+            <p>Beslutsunderlag — Ledningsgruppen</p>
+          </div>
+          <div class="report-mockup__body">
+            <h5>Sammanfattning</h5>
+            <ul>
+              <li><strong>Personalkostnader +340 TSEK</strong> över budget — drivet av oplanerade konsultinköp i november</li>
+              <li><strong>IT-investeringar -280 TSEK</strong> under budget — projektförseningar i CRM-migrering</li>
+              <li><strong>Marknadsbudget -190 TSEK</strong> underutnyttjad — kampanjstart fördröjd till Q1 2026</li>
+            </ul>
+
+            <h5>Avvikelser mot budget</h5>
+            <table class="report-table">
+              <thead>
+                <tr>
+                  <th>Kostnadspost</th>
+                  <th>Budget (TSEK)</th>
+                  <th>Utfall (TSEK)</th>
+                  <th>Avvikelse</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Personal</td>
+                  <td>4 200</td>
+                  <td>4 540</td>
+                  <td class="delta-negative">+340 (+8,1%)</td>
+                </tr>
+                <tr>
+                  <td>IT &amp; System</td>
+                  <td>1 800</td>
+                  <td>1 520</td>
+                  <td class="delta-positive">-280 (-15,6%)</td>
+                </tr>
+                <tr>
+                  <td>Marknad</td>
+                  <td>950</td>
+                  <td>760</td>
+                  <td class="delta-positive">-190 (-20,0%)</td>
+                </tr>
+                <tr>
+                  <td><strong>Total</strong></td>
+                  <td><strong>6 950</strong></td>
+                  <td><strong>6 820</strong></td>
+                  <td class="delta-positive"><strong>-130 (-1,9%)</strong></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h5>Implikationer</h5>
+            <p>Personalkostnadsöverskridandet utgör huvudrisken. Om konsultberoendet inte åtgärdas i Q1 riskerar helårsutfallet en negativ avvikelse på ca 800 TSEK. Underutnyttjad marknads- och IT-budget kan omallokeras för att kompensera.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ================================================================
+         2.3 — GÖR DET SNYGGT
+         ================================================================ -->
+    <section class="section" data-section="plugin" aria-label="Gör det snyggt">
+      <div class="container">
+
+        <span class="section-label animate-on-scroll">2.3 — 5 min</span>
+        <h2 class="animate-on-scroll" data-delay="60">Gör det snyggt — automatiskt</h2>
+
+        <p class="animate-on-scroll" data-delay="100">
+          Du har redan lagt din <code>grafisk_profil.md</code> som kontextfil. Men du kan gå längre: spara den i ditt <strong>Claude Desktop-projekt</strong> så laddas den automatiskt i varje konversation. Kombinera med en <strong>design-plugin</strong> från Marketplace, så får du professionellt formaterade rapporter utan att repetera designinstruktioner.
+        </p>
+
+        <!-- Project-based context mockup -->
+        <div class="claude-mockup animate-on-scroll" data-delay="160">
+          <div class="claude-mockup__toolbar">
+            <div class="claude-mockup__dots">
+              <span></span><span></span><span></span>
+            </div>
+            <span class="claude-mockup__title">Claude Desktop — Projektinställningar</span>
+          </div>
+          <div class="claude-mockup__body" style="padding: 1.5rem;">
+
+            <div style="font-size: 0.8125rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem;">Projektfiler (laddas automatiskt)</div>
+
+            <div style="display: flex; flex-direction: column; gap: 0.625rem;">
+              <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; background: var(--surface-1); border-radius: var(--radius); border: 1px solid var(--border);">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <span style="font-size: 0.875rem; color: var(--text-primary); font-family: var(--font-mono);">grafisk_profil.md</span>
+                <span style="margin-left: auto; font-size: 0.75rem; color: var(--text-tertiary);">Färger, typsnitt, layoutregler</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; background: var(--surface-1); border-radius: var(--radius); border: 1px solid var(--border);">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-hover)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <span style="font-size: 0.875rem; color: var(--text-primary); font-family: var(--font-mono);">kontext.md</span>
+                <span style="margin-left: auto; font-size: 0.75rem; color: var(--text-tertiary);">Företag, tonalitet, målgrupp</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; background: var(--surface-1); border-radius: var(--radius); border: 1px solid rgba(99,102,241,0.3);">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/></svg>
+                <span style="font-size: 0.875rem; color: var(--text-primary); font-family: var(--font-mono);">Design-plugin</span>
+                <span style="margin-left: auto; font-size: 0.75rem; color: var(--green);">Installerad via Marketplace</span>
+              </div>
+            </div>
+
+            <div style="margin-top: 1.25rem; padding: 0.75rem 1rem; background: rgba(16,185,129,0.08); border-radius: var(--radius); border: 1px solid rgba(16,185,129,0.2); font-size: 0.8125rem; color: var(--text-secondary);">
+              <strong style="color: var(--green);">Resultat:</strong> Varje ny konversation i detta projekt har automatiskt tillgång till er grafiska profil och designverktyg.
+            </div>
+
+          </div>
+        </div>
+
+        <div class="checkpoint checkpoint--tip animate-on-scroll" data-delay="100">
+          <div class="checkpoint__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          </div>
+          <div class="checkpoint__body">
+            <p class="checkpoint__title">Så här fungerar det</p>
+            <p class="checkpoint__text">
+              Lägg <code>grafisk_profil.md</code> i ditt Claude Desktop-projekt. Claude laddar den automatiskt i varje konversation. Installera sedan en design-plugin från Marketplace för att få professionell export — PDF, bildbehandling, layouter. Du behöver aldrig repetera designinstruktionerna.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ================================================================
+         2.4 — ITERERA
+         ================================================================ -->
+    <section class="section" data-section="iterate" aria-label="Tre iterationer till perfektion">
+      <div class="container">
+
+        <span class="section-label animate-on-scroll">2.4 — 5 min</span>
+        <h2 class="animate-on-scroll" data-delay="60">Tre iterationer till perfektion</h2>
+
+        <p class="animate-on-scroll" data-delay="100">
+          Den första versionen är sällan perfekt — och det är okej. Styrkan med Claude Desktop är att du kan iterera snabbt. Här är tre uppföljningspromptar:
+        </p>
+
+        <!-- Iteration prompt 1 -->
+        <div class="code-block animate-on-scroll" data-delay="140">
+          <div class="code-block__header">
+            <span class="code-block__lang">Iteration 1</span>
+          </div>
+          <button class="code-copy-btn" aria-label="Kopiera kod">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Kopiera
+          </button>
+          <pre><code class="code-content">Sammanfattningen är för lång — max 100 ord.</code></pre>
+        </div>
+
+        <!-- Iteration prompt 2 -->
+        <div class="code-block animate-on-scroll" data-delay="180">
+          <div class="code-block__header">
+            <span class="code-block__lang">Iteration 2</span>
+          </div>
+          <button class="code-copy-btn" aria-label="Kopiera kod">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Kopiera
+          </button>
+          <pre><code class="code-content">Lägg till ett diagram över intäkts- vs kostnadstrenden.</code></pre>
+        </div>
+
+        <!-- Iteration prompt 3 -->
+        <div class="code-block animate-on-scroll" data-delay="220">
+          <div class="code-block__header">
+            <span class="code-block__lang">Iteration 3</span>
+          </div>
+          <button class="code-copy-btn" aria-label="Kopiera kod">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Kopiera
+          </button>
+          <pre><code class="code-content">Byt ordningen — börja med slutsatsen, inte bakgrunden.</code></pre>
+        </div>
+
+        <!-- Version progression -->
+        <p class="animate-on-scroll" style="margin-top: 2rem;">
+          Varje iteration gör rapporten lite bättre — och tar sekunder:
+        </p>
+
+        <div class="iteration-track animate-on-scroll" data-delay="100">
+
+          <!-- v1 -->
+          <div class="iteration-card">
+            <div class="iteration-card__version">v1 — Första utkast</div>
+            <h4 class="iteration-card__title">Komplett men lång</h4>
+            <p class="iteration-card__desc">Alla avvikelser identifierade. Sammanfattningen är 180 ord — för lång för ett LG-underlag.</p>
+            <div class="iteration-card__arrow" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+            </div>
+          </div>
+
+          <!-- v2 -->
+          <div class="iteration-card">
+            <div class="iteration-card__version">v2 — Koncis</div>
+            <h4 class="iteration-card__title">Skarpare fokus</h4>
+            <p class="iteration-card__desc">Sammanfattning under 100 ord. Diagram tillagt. Tydligare prioritering av avvikelser.</p>
+            <div class="iteration-card__arrow" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+            </div>
+          </div>
+
+          <!-- v3 -->
+          <div class="iteration-card">
+            <div class="iteration-card__version version-label--final" style="background: rgba(16, 185, 129, 0.12); color: var(--green);">v3 — Final</div>
+            <h4 class="iteration-card__title">Redo för LG</h4>
+            <p class="iteration-card__desc">Börjar med slutsatsen. Grafisk profil följd. Diagram, tabell, rekommendation — allt på en sida.</p>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ================================================================
+         2.5 — CHECKPOINT
+         ================================================================ -->
+    <section class="section" data-section="checkpoint" aria-label="Checkpoint">
+      <div class="container">
+
+        <div class="checkpoint animate-on-scroll">
+          <div class="checkpoint__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <div class="checkpoint__body">
+            <p class="checkpoint__title">Checkpoint — Kvalitetschecklista</p>
+            <p class="checkpoint__text">
+              Innan du skickar rapporten vidare — kontrollera att allt stämmer:
+            </p>
+          </div>
+        </div>
+
+        <ul class="checklist animate-on-scroll" data-delay="80">
+          <li class="checklist__item">
+            <input type="checkbox" id="check-1">
+            <label for="check-1">Executive summary max 100 ord?</label>
+          </li>
+          <li class="checklist__item">
+            <input type="checkbox" id="check-2">
+            <label for="check-2">Grafisk profil följd (färger, typsnitt)?</label>
+          </li>
+          <li class="checklist__item">
+            <input type="checkbox" id="check-3">
+            <label for="check-3">Tre största avvikelserna identifierade?</label>
+          </li>
+          <li class="checklist__item">
+            <input type="checkbox" id="check-4">
+            <label for="check-4">Orsaker per avvikelse?</label>
+          </li>
+          <li class="checklist__item">
+            <input type="checkbox" id="check-5">
+            <label for="check-5">Slutsatser baserade på data?</label>
+          </li>
+        </ul>
+
+      </div>
+    </section>
+
+
+    <!-- ================================================================
+         INSIGHT BOX — Context engineering
+         ================================================================ -->
+    <section class="section" data-section="insight" aria-label="Context engineering">
+      <div class="container">
+
+        <div class="insight-box animate-on-scroll">
+          <div class="insight-box__label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            Nyckelinsikt
+          </div>
+          <p class="insight-box__text">
+            Du gav Claude samma data i Modul 1 och Modul 2. Skillnaden? <strong>Kontext.</strong> Du berättade vem du är, vem målgruppen är, och vilken standard ni håller. Det är context engineering — och det är den färdighet som gör AI användbar på riktigt.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ================================================================
+         CTA — Next module
+         ================================================================ -->
+    <section class="section" data-section="cta" aria-label="Nästa steg">
+      <div class="container" style="text-align: center;">
+
+        <h2 class="animate-on-scroll">Redo för nästa steg?</h2>
+        <p class="lead animate-on-scroll" data-delay="80" style="max-width: 540px; margin: 0 auto 2rem;">
+          I nästa modul automatiserar vi det här — så du aldrig behöver göra det manuellt igen.
+        </p>
+
+        <div class="hero__actions animate-on-scroll" data-delay="160">
+          <a href="automation.html" class="btn btn--primary btn--lg">
+            Gå till Modul 3
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ================================================================
+         TROUBLESHOOTING (expandable)
+         ================================================================ -->
+    <section class="section--sm" data-section="troubleshooting" aria-label="Felsökning">
+      <div class="container">
+
+        <h3 class="animate-on-scroll">Vanliga frågor</h3>
+
+        <div class="expandable animate-on-scroll" data-delay="60">
+          <button class="expandable-trigger" aria-expanded="false">
+            Claude läser inte mina filer — vad gör jag?
+            <svg class="expandable-trigger__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="expandable-content">
+            <div class="expandable-content__inner">
+              <p>Se till att alla filer (kontext.md, grafisk_profil.md, kvartalsdata.xlsx) ligger i samma mapp. Claude Desktop kan bara läsa filer i den mapp du har öppnat via Cowork. Om det fortfarande inte fungerar — testa att dra och släppa filerna direkt i chattrutan.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="expandable animate-on-scroll" data-delay="100">
+          <button class="expandable-trigger" aria-expanded="false">
+            Rapporten ser inte ut som i exemplet
+            <svg class="expandable-trigger__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="expandable-content">
+            <div class="expandable-content__inner">
+              <p>Det är förväntat — varje session ger ett unikt resultat. Det viktiga är att <strong>strukturen</strong> stämmer: executive summary först, avvikelser med siffror, orsaker, och slutsatser. Om något saknas, be Claude komplettera med en uppföljningsprompt.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="expandable animate-on-scroll" data-delay="140">
+          <button class="expandable-trigger" aria-expanded="false">
+            Kan jag använda mina egna data istället?
+            <svg class="expandable-trigger__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="expandable-content">
+            <div class="expandable-content__inner">
+              <p>Absolut — det är faktiskt bästa sättet att lära sig. Byt ut kvartalsdata.xlsx mot din egen fil, anpassa kontext.md till ditt företag och din roll, och uppdatera grafisk_profil.md med era riktiga färger. Prompten fungerar likadant.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="expandable animate-on-scroll" data-delay="180">
+          <button class="expandable-trigger" aria-expanded="false">
+            Hur vet jag om siffrorna stämmer?
+            <svg class="expandable-trigger__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="expandable-content">
+            <div class="expandable-content__inner">
+              <p>Kontrollera alltid nyckeltal mot källan. Claude kan göra beräkningsfel, särskilt med stora datamängder. En bra vana är att be Claude <strong>visa uträkningen</strong> bakom varje siffra — så kan du snabbt verifiera.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ================================================================
+         MODULE NAV FOOTER
+         ================================================================ -->
+    <section class="section--sm">
+      <div class="container">
+        <div class="module-footer-nav animate-on-scroll">
+          <a href="cowork.html" class="module-footer-nav__link">
+            <span class="module-footer-nav__dir">&larr; Föregående</span>
+            <span class="module-footer-nav__title">Modul 1 — Cowork</span>
+          </a>
+          <a href="automation.html" class="module-footer-nav__link module-footer-nav__link--next">
+            <span class="module-footer-nav__dir">Nästa &rarr;</span>
+            <span class="module-footer-nav__title">Modul 3 — Plugins</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+
+  <!-- ================================================================
+       FOOTER
+       ================================================================ -->
+  <footer class="site-footer">
+    <div class="container--wide">
+      <div class="site-footer__inner">
+
+        <a href="index.html" class="site-footer__brand" target="_blank" rel="noopener">
+          <svg class="site-footer__logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c3.87 0 7 3.13 7 7s-3.13 7-7 7-7-3.13-7-7 3.13-7 7-7zm0 3c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 3c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z" fill="currentColor"/>
+          </svg>
+          <span class="site-footer__wordmark">AI Academy</span>
+        </a>
+
+        <ul class="site-footer__links">
+          <li><a href="index.html" class="site-footer__link">Academy</a></li>
+          <li><a href="transformation.html" class="site-footer__link">Advisory</a></li>
+          <li><a href="#" class="site-footer__link">Kontakt</a></li>
+        </ul>
+
+      </div>
+      <p class="site-footer__copy">&copy; 2026 AI Academy. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="js/academy.js"></script>
+</body>
+</html>

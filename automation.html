@@ -1,0 +1,1598 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modul 3 — Automatisera med Plugins, Skills & Connectors | AI Academy</title>
+
+  <!-- OG / Social -->
+  <meta property="og:title" content="Modul 3 — Automatisera med Plugins, Skills & Connectors">
+  <meta property="og:description" content="Du har gjort det manuellt. Nu automatiserar vi hela kedjan med plugins, connectors och återanvändbara skills.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="./og-image.png">  <meta property="og:url" content="./automation.html">
+  <meta name="description" content="Modul 3 i AI Academy: Automatisera workflows med Plugin Marketplace, Connectors och Skills i Claude Desktop.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Design system + Academy layer -->
+  <link rel="stylesheet" href="css/vitronia-v2.css">
+  <link rel="stylesheet" href="css/academy.css">
+
+  <style>
+    /* ================================================================
+       MODUL 3 — page-specific styles
+       ================================================================ */
+
+    /* --- Mockup: Plugin Marketplace Grid --- */
+    .marketplace-mockup {
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      margin: 2rem 0;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4);
+    }
+
+    .marketplace-mockup__chrome {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0.75rem 1rem;
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .marketplace-mockup__dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .marketplace-mockup__dot:nth-child(1) { background: #EF4444; }
+    .marketplace-mockup__dot:nth-child(2) { background: #F59E0B; }
+    .marketplace-mockup__dot:nth-child(3) { background: #10B981; }
+
+    .marketplace-mockup__title-bar {
+      margin-left: auto;
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+      font-weight: 500;
+    }
+
+    .marketplace-mockup__body {
+      padding: 1.5rem;
+    }
+
+    .marketplace-mockup__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .marketplace-mockup__heading {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .marketplace-mockup__search {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.4rem 0.875rem;
+      font-size: 0.8125rem;
+      color: var(--text-tertiary);
+      min-width: 200px;
+    }
+
+    .marketplace-mockup__search svg {
+      width: 14px;
+      height: 14px;
+      opacity: 0.5;
+    }
+
+    .marketplace-mockup__categories {
+      display: flex;
+      gap: 0.375rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .marketplace-mockup__cat {
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.3rem 0.75rem;
+      border-radius: 99px;
+      background: var(--surface-3);
+      color: var(--text-secondary);
+      border: 1px solid transparent;
+      cursor: default;
+    }
+
+    .marketplace-mockup__cat--active {
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--accent-hover);
+      border-color: rgba(99, 102, 241, 0.3);
+    }
+
+    .marketplace-mockup__grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .plugin-card {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.625rem;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+
+    .plugin-card:hover {
+      border-color: rgba(99, 102, 241, 0.35);
+      box-shadow: 0 4px 16px rgba(99, 102, 241, 0.08);
+    }
+
+    .plugin-card--highlighted {
+      border-color: rgba(99, 102, 241, 0.5);
+      box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.2), 0 4px 20px rgba(99, 102, 241, 0.12);
+      position: relative;
+    }
+
+    .plugin-card--installed {
+      border-color: rgba(16, 185, 129, 0.35);
+    }
+
+    .plugin-card__icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.125rem;
+      flex-shrink: 0;
+    }
+
+    .plugin-card__icon--blue {
+      background: rgba(59, 130, 246, 0.15);
+      color: #60A5FA;
+    }
+
+    .plugin-card__icon--green {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34D399;
+    }
+
+    .plugin-card__icon--purple {
+      background: rgba(139, 92, 246, 0.15);
+      color: #A78BFA;
+    }
+
+    .plugin-card__icon--amber {
+      background: rgba(245, 158, 11, 0.15);
+      color: #FBBF24;
+    }
+
+    .plugin-card__icon--cyan {
+      background: rgba(6, 182, 212, 0.15);
+      color: #22D3EE;
+    }
+
+    .plugin-card__icon--red {
+      background: rgba(239, 68, 68, 0.15);
+      color: #F87171;
+    }
+
+    .plugin-card__name {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+
+    .plugin-card__desc {
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+      line-height: 1.5;
+      flex: 1;
+    }
+
+    .plugin-card__action {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.625rem;
+      border-radius: var(--radius-sm);
+      align-self: flex-start;
+      cursor: default;
+    }
+
+    .plugin-card__action--install {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .plugin-card__action--installed {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--green);
+    }
+
+    .plugin-card__action--installed svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    /* --- Mockup: Chat with slash command --- */
+    .chat-mockup {
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      margin: 2rem 0;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
+    }
+
+    .chat-mockup__chrome {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0.75rem 1rem;
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .chat-mockup__body {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .chat-mockup__message {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+
+    .chat-mockup__avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .chat-mockup__avatar--user {
+      background: rgba(99, 102, 241, 0.2);
+      color: var(--accent-hover);
+    }
+
+    .chat-mockup__avatar--ai {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--green);
+    }
+
+    .chat-mockup__bubble {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius) var(--radius-lg) var(--radius-lg) var(--radius-lg);
+      padding: 0.625rem 0.875rem;
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      max-width: 80%;
+    }
+
+    .chat-mockup__bubble code {
+      font-family: var(--font-mono);
+      font-size: 0.8em;
+      background: var(--surface-3);
+      color: var(--accent-hover);
+      padding: 0.1em 0.35em;
+      border-radius: var(--radius-sm);
+    }
+
+    .chat-mockup__input {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.625rem 0.875rem;
+      margin-top: 0.5rem;
+    }
+
+    .chat-mockup__input-text {
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      color: var(--accent-hover);
+    }
+
+    .chat-mockup__input-cursor {
+      width: 2px;
+      height: 16px;
+      background: var(--accent-hover);
+      animation: blink 1.2s step-end infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    /* --- Mockup: Connector Settings Panel --- */
+    .settings-mockup {
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      margin: 2rem 0;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
+    }
+
+    .settings-mockup__chrome {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0.75rem 1rem;
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .settings-mockup__body {
+      display: flex;
+      min-height: 300px;
+    }
+
+    .settings-mockup__sidebar {
+      width: 180px;
+      background: var(--surface-2);
+      border-right: 1px solid var(--border);
+      padding: 0.75rem 0;
+      flex-shrink: 0;
+    }
+
+    .settings-mockup__nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      font-size: 0.8125rem;
+      color: var(--text-tertiary);
+      cursor: default;
+    }
+
+    .settings-mockup__nav-item--active {
+      color: var(--accent-hover);
+      background: rgba(99, 102, 241, 0.08);
+      border-right: 2px solid var(--accent);
+    }
+
+    .settings-mockup__nav-item svg {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+    }
+
+    .settings-mockup__main {
+      flex: 1;
+      padding: 1.25rem 1.5rem;
+    }
+
+    .settings-mockup__section-title {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0 0 1rem;
+    }
+
+    .connector-item {
+      display: flex;
+      align-items: center;
+      gap: 0.875rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .connector-item:last-of-type {
+      border-bottom: none;
+    }
+
+    .connector-item__icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.875rem;
+    }
+
+    .connector-item__info {
+      flex: 1;
+    }
+
+    .connector-item__name {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+
+    .connector-item__status {
+      font-size: 0.6875rem;
+      color: var(--text-tertiary);
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      margin-top: 0.125rem;
+    }
+
+    .connector-item__status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .connector-item__status-dot--active {
+      background: var(--green);
+      box-shadow: 0 0 6px rgba(16, 185, 129, 0.4);
+    }
+
+    .connector-item__status-dot--pending {
+      background: var(--amber);
+      box-shadow: 0 0 6px rgba(245, 158, 11, 0.4);
+    }
+
+    .connector-item__badge {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--radius-sm);
+      cursor: default;
+    }
+
+    .connector-item__badge--connected {
+      background: rgba(16, 185, 129, 0.12);
+      color: var(--green);
+    }
+
+    .connector-item__badge--add {
+      background: rgba(99, 102, 241, 0.12);
+      color: var(--accent-hover);
+      border: 1px dashed rgba(99, 102, 241, 0.3);
+    }
+
+    /* --- Mockup: Skill Card --- */
+    .skill-card-mockup {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 1.5rem 0;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+      max-width: 420px;
+    }
+
+    .skill-card-mockup__icon {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, var(--accent), #7c3aed);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .skill-card-mockup__icon svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .skill-card-mockup__info {
+      flex: 1;
+    }
+
+    .skill-card-mockup__name {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.2rem;
+    }
+
+    .skill-card-mockup__desc {
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+    }
+
+    .skill-card-mockup__play {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      flex-shrink: 0;
+      cursor: default;
+      transition: background var(--transition-fast), box-shadow var(--transition-fast);
+    }
+
+    .skill-card-mockup__play:hover {
+      background: var(--accent-hover);
+      box-shadow: 0 0 16px rgba(99, 102, 241, 0.4);
+    }
+
+    .skill-card-mockup__play svg {
+      width: 16px;
+      height: 16px;
+      margin-left: 2px;
+    }
+
+    /* --- Mockup: Schedule UI --- */
+    .schedule-mockup {
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      margin: 2rem 0;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
+    }
+
+    .schedule-mockup__chrome {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0.75rem 1rem;
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .schedule-mockup__body {
+      padding: 1.5rem;
+    }
+
+    .schedule-mockup__row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.875rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .schedule-mockup__row:last-child {
+      border-bottom: none;
+    }
+
+    .schedule-mockup__label {
+      font-size: 0.8125rem;
+      color: var(--text-tertiary);
+      min-width: 80px;
+      flex-shrink: 0;
+    }
+
+    .schedule-mockup__value {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      flex: 1;
+    }
+
+    .schedule-mockup__toggle {
+      width: 40px;
+      height: 22px;
+      background: var(--green);
+      border-radius: 11px;
+      position: relative;
+      cursor: default;
+      flex-shrink: 0;
+    }
+
+    .schedule-mockup__toggle::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background: #fff;
+      border-radius: 50%;
+      top: 3px;
+      right: 3px;
+      transition: transform var(--transition-fast);
+    }
+
+    .schedule-mockup__status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.875rem;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: var(--radius);
+      margin-top: 1rem;
+    }
+
+    .schedule-mockup__status-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .schedule-mockup__status-text {
+      font-size: 0.8125rem;
+      color: var(--green);
+      font-weight: 500;
+    }
+
+    /* --- Connector add dialog overlay --- */
+    .connector-add-dialog {
+      background: var(--surface-3);
+      border: 1px dashed rgba(99, 102, 241, 0.3);
+      border-radius: var(--radius);
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+      cursor: default;
+    }
+
+    .connector-add-dialog__plus {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--accent-hover);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .connector-add-dialog__text {
+      font-size: 0.8125rem;
+      color: var(--accent-hover);
+      font-weight: 500;
+    }
+
+    /* --- Module prev/next navigation --- */
+    .module-footer-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .module-footer-nav__link {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 0.5rem 0.875rem;
+      border-radius: var(--radius);
+      transition: color var(--transition-fast), background var(--transition-fast);
+    }
+
+    .module-footer-nav__link:hover {
+      color: var(--text-primary);
+      background: var(--surface-3);
+      text-decoration: none;
+    }
+
+    .module-footer-nav__link svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    /* --- Plugin Create mockup --- */
+    .plugin-create-mockup {
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      margin: 2rem 0;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
+    }
+
+    .plugin-create-mockup__chrome {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0.75rem 1rem;
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .plugin-create-mockup__body {
+      padding: 1.5rem;
+    }
+
+    .plugin-create-mockup__field {
+      margin-bottom: 1rem;
+    }
+
+    .plugin-create-mockup__label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.375rem;
+      display: block;
+    }
+
+    .plugin-create-mockup__input {
+      display: block;
+      width: 100%;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.5rem 0.75rem;
+      font-size: 0.875rem;
+      font-family: var(--font-sans);
+      color: var(--text-primary);
+    }
+
+    .plugin-create-mockup__textarea {
+      display: block;
+      width: 100%;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.625rem 0.75rem;
+      font-size: 0.8125rem;
+      font-family: var(--font-mono);
+      color: var(--text-secondary);
+      line-height: 1.7;
+      resize: none;
+      min-height: 140px;
+    }
+
+    /* --- Mobile: settings panel sidebar --- */
+    @media (max-width: 600px) {
+      .settings-mockup__sidebar {
+        display: none;
+      }
+
+      .marketplace-mockup__grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .plugin-card__desc {
+        display: none;
+      }
+
+      .module-footer-nav {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .module-footer-nav__link {
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .marketplace-mockup__grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================================================================
+       NAVIGATION
+       ================================================================ -->
+  <nav class="academy-nav" role="navigation" aria-label="Huvudnavigering">
+    <div class="academy-nav__inner">
+      <a href="index.html" class="academy-nav__brand">
+        <svg class="academy-nav__brand-logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c3.87 0 7 3.13 7 7s-3.13 7-7 7-7-3.13-7-7 3.13-7 7-7zm0 3c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 3c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z" fill="currentColor" opacity="0.9"/>
+        </svg>
+        <span class="academy-nav__brand-name">AI</span>
+        <span class="academy-nav__brand-sep">/</span>
+        <span class="academy-nav__brand-name" style="color: var(--accent-hover);">Academy</span>
+      </a>
+      <ul class="academy-nav__links">
+        <li><a href="index.html" class="academy-nav__link">Översikt</a></li>
+        <li><a href="reveal.html" class="academy-nav__link">Modul 0</a></li>
+        <li><a href="cowork.html" class="academy-nav__link">Modul 1</a></li>
+        <li><a href="rapport.html" class="academy-nav__link">Modul 2</a></li>
+        <li><a href="automation.html" class="academy-nav__link active">Modul 3</a></li>
+        <li><a href="claude-code.html" class="academy-nav__link">Modul 4</a></li>
+        <li><a href="transformation.html" class="academy-nav__link">Advisory</a></li>
+      </ul>
+      <button class="academy-nav__hamburger" aria-label="Meny" aria-expanded="false" onclick="this.setAttribute('aria-expanded', this.getAttribute('aria-expanded')==='false');document.getElementById('mobile-drawer').classList.toggle('open');">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile drawer -->
+  <div class="academy-nav__mobile-drawer" id="mobile-drawer">
+    <a href="index.html" class="academy-nav__mobile-link">Översikt</a>
+    <a href="reveal.html" class="academy-nav__mobile-link">Modul 0 — Reveal</a>
+    <a href="cowork.html" class="academy-nav__mobile-link">Modul 1 — Cowork</a>
+    <a href="rapport.html" class="academy-nav__mobile-link">Modul 2 — Rapport</a>
+    <a href="automation.html" class="academy-nav__mobile-link active">Modul 3 — Automatisera</a>
+    <a href="claude-code.html" class="academy-nav__mobile-link">Modul 4 — Claude Code</a>
+    <a href="transformation.html" class="academy-nav__mobile-link">Advisory</a>
+  </div>
+
+  <!-- Progress bar -->
+  <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+
+  <main>
+
+    <!-- ================================================================
+         HERO
+         ================================================================ -->
+    <section class="hero section" aria-label="Modul 3 — Automatisera">
+      <div class="container">
+
+        <div class="hero__eyebrow animate-on-scroll">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
+          Modul 3 &middot; 20 min
+        </div>
+
+        <h1 class="hero__title animate-on-scroll" data-delay="80">
+          Automatisera med <span class="gradient-text">Plugins, Skills & Connectors</span>
+        </h1>
+
+        <p class="hero__subtitle animate-on-scroll" data-delay="160">
+          Du har gjort det manuellt. Nu automatiserar vi hela kedjan.
+        </p>
+
+      </div>
+    </section>
+
+
+    <!-- ================================================================
+         INTRO
+         ================================================================ -->
+    <section class="section" data-section="intro">
+      <div class="container">
+
+        <div class="animate-on-scroll">
+          <p class="lead">
+            I de två första modulerna gjorde du allt manuellt — laddade filer, skrev prompter, kopierade resultat. Det fungerar, men det skalar inte. I den här modulen automatiserar vi hela kedjan: från datakälla till färdig leverans.
+          </p>
+        </div>
+
+        <!-- Maturity model: highlight level 3 -->
+        <div class="maturity animate-on-scroll" data-delay="80">
+          <div class="maturity__track">
+            <div class="maturity__level maturity__level--complete">
+              <span class="maturity__step-num">Nivå 1</span>
+              <div class="maturity__level-body">
+                <div class="maturity__level-title">Assistent</div>
+                <p class="maturity__level-desc">Claude.ai (chatt)</p>
+              </div>
+            </div>
+            <div class="maturity__level maturity__level--complete">
+              <span class="maturity__step-num">Nivå 2</span>
+              <div class="maturity__level-body">
+                <div class="maturity__level-title">Coworker</div>
+                <p class="maturity__level-desc">Desktop + Cowork</p>
+              </div>
+            </div>
+            <div class="maturity__level maturity__level--active">
+              <span class="maturity__step-num">Nivå 3</span>
+              <div class="maturity__level-body">
+                <div class="maturity__level-title">Specialist</div>
+                <p class="maturity__level-desc">Plugins + Skills</p>
+              </div>
+            </div>
+            <div class="maturity__level">
+              <span class="maturity__step-num">Nivå 4</span>
+              <div class="maturity__level-body">
+                <div class="maturity__level-title">Agent Builder</div>
+                <p class="maturity__level-desc">Claude Code</p>
+              </div>
+            </div>
+            <div class="maturity__level">
+              <span class="maturity__step-num">Nivå 5</span>
+              <div class="maturity__level-body">
+                <div class="maturity__level-title">Agentsystem</div>
+                <p class="maturity__level-desc">Skräddarsytt</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ================================================================
+         3.1 PLUGIN MARKETPLACE
+         ================================================================ -->
+    <section class="section" data-section="marketplace">
+      <div class="container">
+
+        <span class="section-label animate-on-scroll">3.1 — Plugin Marketplace</span>
+        <h2 class="animate-on-scroll" data-delay="40">Utöka Claude med plugins</h2>
+
+        <p class="animate-on-scroll" data-delay="80">
+          Plugin Marketplace är Claude Desktops utvidgningssystem. Här hittar du färdiga integrationer — från Google Workspace till designverktyg — som ger Claude nya förmågor utan att du behöver konfigurera någonting.
+        </p>
+
+        <!-- Annotated Marketplace Mockup -->
+        <div class="marketplace-mockup animate-on-scroll" data-delay="120" style="position: relative;">
+          <div class="marketplace-mockup__chrome">
+            <div class="marketplace-mockup__dot"></div>
+            <div class="marketplace-mockup__dot"></div>
+            <div class="marketplace-mockup__dot"></div>
+            <div class="marketplace-mockup__title-bar">Claude Desktop — Plugin Marketplace</div>
+          </div>
+          <div class="marketplace-mockup__body">
+            <div class="marketplace-mockup__header">
+              <h3 class="marketplace-mockup__heading" style="margin: 0;">Plugin Marketplace</h3>
+              <div class="marketplace-mockup__search">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                Sök plugins...
+              </div>
+            </div>
+
+            <div class="marketplace-mockup__categories">
+              <span class="marketplace-mockup__cat marketplace-mockup__cat--active">Alla</span>
+              <span class="marketplace-mockup__cat">Produktivitet</span>
+              <span class="marketplace-mockup__cat">Data</span>
+              <span class="marketplace-mockup__cat">Design</span>
+              <span class="marketplace-mockup__cat">Kommunikation</span>
+            </div>
+
+            <div class="marketplace-mockup__grid">
+              <!-- Plugin 1: Google Workspace (highlighted) -->
+              <div class="plugin-card plugin-card--highlighted">
+                <div class="plugin-card__icon plugin-card__icon--blue">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                </div>
+                <div class="plugin-card__name">Google Workspace</div>
+                <div class="plugin-card__desc">Drive, Docs, Sheets, Gmail</div>
+                <span class="plugin-card__action plugin-card__action--install">Installera</span>
+              </div>
+
+              <!-- Plugin 2: GitHub (installed) -->
+              <div class="plugin-card plugin-card--installed">
+                <div class="plugin-card__icon plugin-card__icon--purple">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+                </div>
+                <div class="plugin-card__name">GitHub</div>
+                <div class="plugin-card__desc">Repos, issues, pull requests</div>
+                <span class="plugin-card__action plugin-card__action--installed">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  Installerad
+                </span>
+              </div>
+
+              <!-- Plugin 3: Slack -->
+              <div class="plugin-card">
+                <div class="plugin-card__icon plugin-card__icon--amber">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/><path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/><path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/><path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z"/></svg>
+                </div>
+                <div class="plugin-card__name">Slack</div>
+                <div class="plugin-card__desc">Meddelanden, kanaler</div>
+                <span class="plugin-card__action plugin-card__action--install">Installera</span>
+              </div>
+
+              <!-- Plugin 4: Databas -->
+              <div class="plugin-card">
+                <div class="plugin-card__icon plugin-card__icon--cyan">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+                </div>
+                <div class="plugin-card__name">Databas</div>
+                <div class="plugin-card__desc">SQL, CSV, API-anslutning</div>
+                <span class="plugin-card__action plugin-card__action--install">Installera</span>
+              </div>
+
+              <!-- Plugin 5: Kalender -->
+              <div class="plugin-card">
+                <div class="plugin-card__icon plugin-card__icon--green">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                </div>
+                <div class="plugin-card__name">Kalender</div>
+                <div class="plugin-card__desc">Boka, hantera möten</div>
+                <span class="plugin-card__action plugin-card__action--install">Installera</span>
+              </div>
+
+              <!-- Plugin 6: Webbsok -->
+              <div class="plugin-card">
+                <div class="plugin-card__icon plugin-card__icon--red">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                </div>
+                <div class="plugin-card__name">Webbsök</div>
+                <div class="plugin-card__desc">Sök och sammanfatta</div>
+                <span class="plugin-card__action plugin-card__action--install">Installera</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Annotations -->
+          <div class="annotation" data-tip="Kategorier för snabb filtrering" style="top: 105px; left: 30px;">1</div>
+          <div class="annotation" data-tip="Klicka Installera — klart" style="bottom: 85px; right: 35px;">2</div>
+        </div>
+
+        <!-- Steps -->
+        <div class="steps animate-on-scroll" data-delay="160">
+          <div class="step">
+            <div class="step__indicator">
+              <div class="step__number">1</div>
+              <div class="step__line"></div>
+            </div>
+            <div class="step__body">
+              <h4 class="step__title">Öppna Plugin Marketplace</h4>
+              <p class="step__desc">Från Claude Desktop, navigera till Plugin Marketplace via menyn eller inställningarna.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step__indicator">
+              <div class="step__number">2</div>
+              <div class="step__line"></div>
+            </div>
+            <div class="step__body">
+              <h4 class="step__title">Sök efter den plugin du behöver</h4>
+              <p class="step__desc">Använd sökfältet eller bläddra i kategorier: Produktivitet, Data, Design, Kommunikation.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step__indicator">
+              <div class="step__number">3</div>
+              <div class="step__line"></div>
+            </div>
+            <div class="step__body">
+              <h4 class="step__title">Klicka Installera</h4>
+              <p class="step__desc">Ge behörigheter om det krävs — de flesta plugins fungerar direkt.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step__indicator">
+              <div class="step__number">4</div>
+            </div>
+            <div class="step__body">
+              <h4 class="step__title">Pluginen är nu tillgänglig</h4>
+              <p class="step__desc">Den dyker upp i alla dina Cowork-sessioner och kan användas direkt i konversationen.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chat mockup: using a plugin with / prefix -->
+        <h4 class="animate-on-scroll">Använda en plugin i chatten</h4>
+        <p class="animate-on-scroll" data-delay="40">
+          Installerade plugins används direkt i konversationen. Skriv <code>/</code> för att se tillgängliga kommandon:
+        </p>
+
+        <div class="chat-mockup animate-on-scroll" data-delay="80">
+          <div class="chat-mockup__chrome">
+            <div class="marketplace-mockup__dot"></div>
+            <div class="marketplace-mockup__dot"></div>
+            <div class="marketplace-mockup__dot"></div>
+          </div>
+          <div class="chat-mockup__body">
+            <div class="chat-mockup__message">
+              <div class="chat-mockup__avatar chat-mockup__avatar--user">Du</div>
+              <div class="chat-mockup__bubble">
+                Hämta senaste månadens försäljningssiffror från <code>/google-sheets</code> och sammanfatta trenden.
+              </div>
+            </div>
+            <div class="chat-mockup__message">
+              <div class="chat-mockup__avatar chat-mockup__avatar--ai">C</div>
+              <div class="chat-mockup__bubble">
+                Jag hämtar data från ert Google Sheet "Försäljning 2026"...<br>
+                <span style="color: var(--green);">3 datakällor lästa.</span> Försäljningen ökade 12% i februari jämfört med januari. Största bidraget kom från segment B (+340 TSEK).
+              </div>
+            </div>
+            <div class="chat-mockup__input">
+              <span class="chat-mockup__input-text">/exportera-pdf</span>
+              <span class="chat-mockup__input-cursor"></span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ================================================================
+         3.2 CONNECTORS
+         ================================================================ -->
+    <section class="section" data-section="connectors">
+      <div class="container">
+
+        <span class="section-label animate-on-scroll">3.2 — Connectors</span>
+        <h2 class="animate-on-scroll" data-delay="40">Data direkt — utan filhantering</h2>
+
+        <p class="animate-on-scroll" data-delay="80">
+          En connector låter Claude hämta data direkt från en källa — en lokal mapp, Google Drive, en databas — istället för att du manuellt laddar upp filer varje gång.
+        </p>
+
+        <blockquote class="animate-on-scroll" data-delay="100">
+          <p>En connector gör att Claude kan hämta sin egen data — du behöver inte vara mellanhanden.</p>
+        </blockquote>
+
+        <!-- Settings panel mockup -->
+        <div class="settings-mockup animate-on-scroll" data-delay="120" style="position: relative;">
+          <div class="settings-mockup__chrome">
+            <div class="marketplace-mockup__dot"></div>
+            <div class="marketplace-mockup__dot"></div>
+            <div class="marketplace-mockup__dot"></div>
+          </div>
+          <div class="settings-mockup__body">
+            <div class="settings-mockup__sidebar">
+              <div class="settings-mockup__nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                Allmänt
+              </div>
+              <div class="settings-mockup__nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/></svg>
+                Plugins
+              </div>
+              <div class="settings-mockup__nav-item settings-mockup__nav-item--active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                Connectors
+              </div>
+              <div class="settings-mockup__nav-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Säkerhet
+              </div>
+            </div>
+
+            <div class="settings-mockup__main">
+              <h4 class="settings-mockup__section-title">Anslutna datakällor</h4>
+
+              <div class="connector-item">
+                <div class="connector-item__icon" style="background: rgba(245, 158, 11, 0.15); color: #FBBF24;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                </div>
+                <div class="connector-item__info">
+                  <div class="connector-item__name">Dokument (lokal mapp)</div>
+                  <div class="connector-item__status">
+                    <span class="connector-item__status-dot connector-item__status-dot--active"></span>
+                    ~/Dokument/Rapporter
+                  </div>
+                </div>
+                <span class="connector-item__badge connector-item__badge--connected">Ansluten</span>
+              </div>
+
+              <div class="connector-item">
+                <div class="connector-item__icon" style="background: rgba(59, 130, 246, 0.15); color: #60A5FA;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                </div>
+                <div class="connector-item__info">
+                  <div class="connector-item__name">Google Drive</div>
+                  <div class="connector-item__status">
+                    <span class="connector-item__status-dot connector-item__status-dot--active"></span>
+                    Delad mapp "Ekonomi 2026"
+                  </div>
+                </div>
+                <span class="connector-item__badge connector-item__badge--connected">Ansluten</span>
+              </div>
+
+              <div class="connector-add-dialog">
+                <div class="connector-add-dialog__plus">+</div>
+                <div class="connector-add-dialog__text">Lägg till connector...</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Annotations -->
+          <div class="annotation" data-tip="Aktiva connectors med status" style="top: 70px; right: 25px;">1</div>
+          <div class="annotation" data-tip="Lägg till ny datakälla" style="bottom: 25px; right: 120px;">2</div>
+        </div>
+
+        <!-- Before/After comparison -->
+        <div class="comparison animate-on-scroll" data-delay="80">
+          <div class="comparison__panel comparison__panel--before">
+            <div class="comparison__label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+              Före
+            </div>
+            <div class="comparison__content">
+              Du laddar ner filen från Drive, drar den till Cowork-sessionen, skriver instruktionen, kopierar resultatet tillbaka.
+            </div>
+          </div>
+          <div class="comparison__divider">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+          </div>
+          <div class="comparison__panel comparison__panel--after">
+            <div class="comparison__label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              Efter
+            </div>
+            <div class="comparison__content">
+              Claude hämtar data automatiskt från din connector. Du beskriver bara vad du vill ha — data är redan där.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ================================================================
+         3.3 SKAPA EN SKILL
+         ================================================================ -->
+    <section class="section" data-section="skill">
+      <div class="container">
+
+        <span class="section-label animate-on-scroll">3.3 — Skills</span>
+        <h2 class="animate-on-scroll" data-delay="40">Din första återanvändbara workflow</h2>
+
+        <p class="animate-on-scroll" data-delay="80">
+          En skill är en sparad instruktion — en återanvändbar workflow som du kan köra med ett klick. Istället för att skriva samma prompt varje gång, skapar du en skill en gång och använder den om och om igen.
+        </p>
+
+        <!-- Plugin Create mockup -->
+        <div class="plugin-create-mockup animate-on-scroll" data-delay="120" style="position: relative;">
+          <div class="plugin-create-mockup__chrome">
+            <div class="marketplace-mockup__dot"></div>
+            <div class="marketplace-mockup__dot"></div>
+            <div class="marketplace-mockup__dot"></div>
+          </div>
+          <div class="plugin-create-mockup__body">
+            <h4 style="margin: 0 0 1rem; color: var(--text-primary); font-size: 0.9375rem;">Skapa ny skill</h4>
+
+            <div class="plugin-create-mockup__field">
+              <span class="plugin-create-mockup__label">Namn</span>
+              <div class="plugin-create-mockup__input">Månadsrapport</div>
+            </div>
+
+            <div class="plugin-create-mockup__field">
+              <span class="plugin-create-mockup__label">Beskrivning</span>
+              <div class="plugin-create-mockup__input">Genererar en standardiserad månadsrapport från ekonomidata.</div>
+            </div>
+
+            <div class="plugin-create-mockup__field">
+              <span class="plugin-create-mockup__label">Instruktion</span>
+              <div class="plugin-create-mockup__textarea" style="white-space: pre-line;">1. Läs senaste månadsdata från connector "Ekonomi"
+2. Jämför mot budget (tolerans 2%)
+3. Identifiera de tre största avvikelserna
+4. Skriv rapport i vår grafiska profil (kontext.md)
+5. Exportera som PDF</div>
+            </div>
+          </div>
+
+          <!-- Annotation -->
+          <div class="annotation" data-tip="Instruktionen är hela receptet" style="top: 50%; right: 20px; transform: translateY(-50%);">1</div>
+        </div>
+
+        <!-- Code block with copy button -->
+        <p class="animate-on-scroll" data-delay="80">
+          Här är samma instruktion som du kan kopiera direkt:
+        </p>
+
+        <div class="code-block animate-on-scroll" data-delay="100">
+          <div class="code-block__header">
+            <span class="code-block__lang">Skill-instruktion</span>
+            <div class="code-block__dots">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+          <button class="code-copy-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Kopiera
+          </button>
+          <pre><code class="code-content">Namn: Månadsrapport
+Beskrivning: Genererar en standardiserad månadsrapport.
+
+Instruktion:
+1. Läs senaste månadsdata från connector "Ekonomi"
+2. Jämför mot budget (tolerans 2%)
+3. Identifiera de tre största avvikelserna
+4. Skriv rapport i vår grafiska profil (kontext.md)
+5. Exportera som PDF</code></pre>
+        </div>
+
+        <!-- Result: Skill card -->
+        <p class="animate-on-scroll" data-delay="80">
+          Resultatet är ett skill-kort som dyker upp i Claude Desktop:
+        </p>
+
+        <div class="skill-card-mockup animate-on-scroll" data-delay="100">
+          <div class="skill-card-mockup__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <div class="skill-card-mockup__info">
+            <div class="skill-card-mockup__name">Månadsrapport</div>
+            <div class="skill-card-mockup__desc">Genererar en standardiserad månadsrapport.</div>
+          </div>
+          <div class="skill-card-mockup__play">
+            <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </div>
+        </div>
+
+        <div class="checkpoint checkpoint--tip animate-on-scroll" data-delay="120">
+          <div class="checkpoint__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          </div>
+          <div class="checkpoint__body">
+            <h4 class="checkpoint__title">Nyckelinsikt</h4>
+            <p class="checkpoint__text">Du har just skapat en återanvändbar workflow — utan en rad kod. Nästa gång du behöver månadsrapporten, trycker du bara på play.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ================================================================
+         3.4 SCHEMALÄGGNING
+         ================================================================ -->
+    <section class="section" data-section="schedule">
+      <div class="container">
+
+        <span class="section-label animate-on-scroll">3.4 — Schemaläggning</span>
+        <h2 class="animate-on-scroll" data-delay="40">Låt det köra sig självt</h2>
+
+        <p class="animate-on-scroll" data-delay="80">
+          När du har en fungerande skill kan du schemalägga den. Claude kör uppgiften automatiskt vid den tidpunkt du väljer — helt utan att någon öppnar programmet.
+        </p>
+
+        <!-- Schedule mockup -->
+        <div class="schedule-mockup animate-on-scroll" data-delay="120">
+          <div class="schedule-mockup__chrome">
+            <div class="marketplace-mockup__dot"></div>
+            <div class="marketplace-mockup__dot"></div>
+            <div class="marketplace-mockup__dot"></div>
+          </div>
+          <div class="schedule-mockup__body">
+            <h4 style="margin: 0 0 1rem; color: var(--text-primary); font-size: 0.9375rem;">Schemaläggning — Månadsrapport</h4>
+
+            <div class="schedule-mockup__row">
+              <span class="schedule-mockup__label">Skill</span>
+              <span class="schedule-mockup__value">Månadsrapport</span>
+            </div>
+            <div class="schedule-mockup__row">
+              <span class="schedule-mockup__label">Frekvens</span>
+              <span class="schedule-mockup__value">Första varje månad</span>
+            </div>
+            <div class="schedule-mockup__row">
+              <span class="schedule-mockup__label">Tid</span>
+              <span class="schedule-mockup__value">08:00</span>
+            </div>
+            <div class="schedule-mockup__row">
+              <span class="schedule-mockup__label">Leverans</span>
+              <span class="schedule-mockup__value">Skicka till min e-post</span>
+            </div>
+            <div class="schedule-mockup__row">
+              <span class="schedule-mockup__label">Aktiv</span>
+              <div class="schedule-mockup__toggle"></div>
+            </div>
+
+            <div class="schedule-mockup__status">
+              <span class="schedule-mockup__status-dot"></span>
+              <span class="schedule-mockup__status-text">Nästa körning: 1 april 2026, kl 08:00</span>
+            </div>
+          </div>
+        </div>
+
+        <blockquote class="animate-on-scroll" data-delay="80">
+          <p>Första varje månad får du en färdig rapport i din inkorg — utan att någon öppnar Claude.</p>
+        </blockquote>
+
+      </div>
+    </section>
+
+
+    <!-- ================================================================
+         3.5 CHECKPOINT
+         ================================================================ -->
+    <section class="section" data-section="checkpoint">
+      <div class="container">
+
+        <div class="checkpoint animate-on-scroll">
+          <div class="checkpoint__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <div class="checkpoint__body">
+            <h4 class="checkpoint__title">Checkpoint — Modul 3 klar</h4>
+            <p class="checkpoint__text" style="margin-bottom: 1rem;">Du har byggt en automatiserad rapportkedja:</p>
+            <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem;">
+              <li style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                Plugins installerade från Marketplace
+              </li>
+              <li style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                Datakälla kopplad via connector
+              </li>
+              <li style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                Skill skapad för månadsrapporten
+              </li>
+              <li style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                Schemalagd att köra automatiskt
+              </li>
+            </ul>
+            <p class="checkpoint__text" style="margin-top: 1rem; font-weight: 600; color: var(--green);">
+              Du har just byggt en automation utan en rad kod.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ================================================================
+         CTA
+         ================================================================ -->
+    <section class="section" data-section="cta">
+      <div class="container" style="text-align: center;">
+
+        <h2 class="animate-on-scroll">Vill du veta vad mer som är möjligt?</h2>
+        <p class="lead animate-on-scroll" data-delay="60" style="max-width: 560px; margin: 0 auto 2rem;">
+          I sista modulen visar vi avancerade agentsystem — dedikerade AI-agenter som arbetar autonomt med context engineering, multi-agent granskning och långtidsminne.
+        </p>
+
+        <div class="animate-on-scroll" data-delay="120">
+          <a href="claude-code.html" class="btn btn--primary btn--lg">
+            Gå till Modul 4
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ================================================================
+         TROUBLESHOOTING (Expandable)
+         ================================================================ -->
+    <section class="section" data-section="troubleshooting">
+      <div class="container">
+
+        <h3 class="animate-on-scroll">Vanliga frågor</h3>
+
+        <div class="expandable animate-on-scroll" data-delay="40">
+          <button class="expandable-trigger" aria-expanded="false">
+            Jag hittar inte Plugin Marketplace
+            <svg class="expandable-trigger__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="expandable-content">
+            <div class="expandable-content__inner">
+              <p>Öppna Claude Desktop och leta efter "Plugins" eller "Marketplace" i huvudmenyn eller inställningarna. Platsen kan variera mellan versioner — om du inte hittar det, uppdatera till senaste versionen av Claude Desktop.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="expandable animate-on-scroll" data-delay="80">
+          <button class="expandable-trigger" aria-expanded="false">
+            Min connector fungerar inte
+            <svg class="expandable-trigger__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="expandable-content">
+            <div class="expandable-content__inner">
+              <p>Kontrollera behörigheter — Claude behöver läsrättigheter till den mapp eller tjänst du försöker ansluta. För Google Drive: se till att du godkänt OAuth-behörigheter. För lokala mappar: kontrollera att Claude Desktop har filåtkomst i systeminställningarna.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="expandable animate-on-scroll" data-delay="120">
+          <button class="expandable-trigger" aria-expanded="false">
+            Min skill körs inte som förväntat
+            <svg class="expandable-trigger__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="expandable-content">
+            <div class="expandable-content__inner">
+              <p>Dubbelkolla instruktionen — är alla steg tydliga? Testa att köra skillen manuellt först genom att trycka play. Om ett steg misslyckas, bryt ned det i mindre delar. Kom ihåg att namnge connectors exakt som de refereras i instruktionen.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="expandable animate-on-scroll" data-delay="160">
+          <button class="expandable-trigger" aria-expanded="false">
+            Hur skiljer sig en skill från en vanlig prompt?
+            <svg class="expandable-trigger__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="expandable-content">
+            <div class="expandable-content__inner">
+              <p>En prompt är engångsinstruktion — du skriver den varje gång. En skill är sparad, återanvändbar, och kan schemaläggas. Tanken är: skriv prompten en gång, spara som skill, kör automatiskt.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ================================================================
+         MODULE PREV/NEXT NAVIGATION
+         ================================================================ -->
+    <section class="section--sm">
+      <div class="container">
+        <div class="module-footer-nav">
+          <a href="rapport.html" class="module-footer-nav__link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+            Modul 2 — Rapport
+          </a>
+          <a href="claude-code.html" class="module-footer-nav__link">
+            Modul 4 — Claude Code
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+
+  <!-- ================================================================
+       FOOTER
+       ================================================================ -->
+  <footer style="border-top: 1px solid var(--border); padding: 3rem 0 2rem; margin-top: 2rem;">
+    <div class="container">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem;">
+
+        <a href="index.html" style="display: flex; align-items: center; gap: 0.625rem; text-decoration: none;" target="_blank" rel="noopener">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="color: var(--accent-hover);">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c3.87 0 7 3.13 7 7s-3.13 7-7 7-7-3.13-7-7 3.13-7 7-7zm0 3c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 3c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z" fill="currentColor"/>
+          </svg>
+          <span style="font-size: 1rem; font-weight: 700; color: var(--text-primary); letter-spacing: -0.01em;">AI Academy</span>
+        </a>
+
+        <ul style="display: flex; align-items: center; gap: 1.5rem; list-style: none; margin: 0; padding: 0; flex-wrap: wrap;">
+          <li><a href="index.html" style="font-size: 0.8125rem; color: var(--text-tertiary); text-decoration: none;">Academy</a></li>
+          <li><a href="transformation.html" style="font-size: 0.8125rem; color: var(--text-tertiary); text-decoration: none;">Advisory</a></li>
+          <li><a href="kontakt.html?interest=demo" style="font-size: 0.8125rem; color: var(--text-tertiary); text-decoration: none;">Verksamhetsplattformar</a></li>
+          <li><a href="#" style="font-size: 0.8125rem; color: var(--text-tertiary); text-decoration: none;">Kontakt</a></li>
+        </ul>
+
+      </div>
+      <p style="width: 100%; text-align: center; font-size: 0.75rem; color: var(--text-tertiary); margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">&copy; 2026 AI Academy. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="js/academy.js"></script>
+</body>
+</html>

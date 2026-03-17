@@ -1,0 +1,2237 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Från Excel till styrelseunderlag | AI Academy</title>
+
+  <!-- OG tags -->
+  <meta property="og:title" content="Från Excel till styrelseunderlag på 4 minuter">
+  <meta property="og:description" content="Se hur rådata blir ett professionellt styrelseunderlag med Claude Desktop och context engineering.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="./og-image.png">  <meta property="og:site_name" content="AI Academy">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Design system -->
+  <link rel="stylesheet" href="css/vitronia-v2.css">
+  <link rel="stylesheet" href="css/academy.css">
+
+  <style>
+    /* =====================================================
+       REVEAL PAGE — Section-specific styles
+       ===================================================== */
+
+    /* Full-viewport sections */
+    .reveal-section {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4rem var(--content-padding-x);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .reveal-section__inner {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .reveal-section__step {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent-hover);
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: 99px;
+      padding: 0.25rem 0.875rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .reveal-section__title {
+      font-size: clamp(1.75rem, 4vw, 2.75rem);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+      color: var(--text-primary);
+    }
+
+    .reveal-section__subtitle {
+      font-size: clamp(1rem, 2vw, 1.1875rem);
+      color: var(--text-secondary);
+      line-height: 1.7;
+      max-width: 640px;
+      margin-bottom: 2.5rem;
+    }
+
+    /* =====================================================
+       SECTION 1: Messy Excel mockup
+       ===================================================== */
+
+    .excel-mockup {
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px var(--glass-border),
+        0 24px 64px rgba(0, 0, 0, 0.5);
+    }
+
+    .excel-toolbar {
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
+      padding: 0.5rem 0.875rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .excel-toolbar__dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .excel-toolbar__dots span {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .excel-toolbar__dots span:nth-child(1) { background: #EF4444; }
+    .excel-toolbar__dots span:nth-child(2) { background: #F59E0B; }
+    .excel-toolbar__dots span:nth-child(3) { background: #10B981; }
+
+    .excel-toolbar__title {
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+      font-family: var(--font-sans);
+    }
+
+    .excel-sheet {
+      overflow-x: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--surface-4) transparent;
+    }
+
+    .excel-sheet table {
+      width: 100%;
+      min-width: 900px;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      line-height: 1.5;
+    }
+
+    .excel-sheet th {
+      background: var(--surface-3);
+      color: var(--text-tertiary);
+      font-weight: 500;
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 0.375rem 0.625rem;
+      border: 1px solid var(--border);
+      text-align: left;
+      white-space: nowrap;
+      position: sticky;
+      top: 0;
+    }
+
+    .excel-sheet td {
+      padding: 0.3125rem 0.625rem;
+      border: 1px solid rgba(30, 41, 59, 0.5);
+      white-space: nowrap;
+      color: var(--text-secondary);
+    }
+
+    .excel-sheet tr:nth-child(even) td {
+      background: rgba(255, 255, 255, 0.015);
+    }
+
+    /* Row header */
+    .excel-sheet td:first-child,
+    .excel-sheet th:first-child {
+      background: var(--surface-2);
+      color: var(--text-tertiary);
+      text-align: center;
+      font-size: 0.6875rem;
+      width: 32px;
+      min-width: 32px;
+    }
+
+    /* Messy data styling */
+    .cell--missing {
+      color: var(--text-tertiary) !important;
+      font-style: italic;
+    }
+
+    .cell--error {
+      color: var(--red) !important;
+      background: rgba(239, 68, 68, 0.08) !important;
+    }
+
+    .cell--warn {
+      background: rgba(245, 158, 11, 0.08) !important;
+      color: var(--amber) !important;
+    }
+
+    .cell--inconsistent {
+      color: var(--text-tertiary) !important;
+      text-decoration: line-through;
+      text-decoration-color: rgba(239, 68, 68, 0.4);
+    }
+
+    .cell--highlight {
+      background: rgba(99, 102, 241, 0.1) !important;
+    }
+
+    /* =====================================================
+       SECTION 2: Context Engineering
+       ===================================================== */
+
+    .context-files {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .context-file {
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    }
+
+    .context-file__header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.625rem 1rem;
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .context-file__icon {
+      width: 16px;
+      height: 16px;
+      color: var(--accent-hover);
+      flex-shrink: 0;
+    }
+
+    .context-file__name {
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+    }
+
+    .context-file__body {
+      padding: 1.25rem;
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      line-height: 1.8;
+      color: var(--text-secondary);
+    }
+
+    .context-file__body .key {
+      color: var(--accent-hover);
+    }
+
+    .context-file__body .value {
+      color: var(--green);
+    }
+
+    .context-file__body .comment {
+      color: var(--text-tertiary);
+      font-style: italic;
+    }
+
+    .context-annotation {
+      margin-top: 2rem;
+      padding: 1.25rem 1.5rem;
+      background: rgba(99, 102, 241, 0.06);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .context-annotation__icon {
+      width: 24px;
+      height: 24px;
+      color: var(--accent-hover);
+      flex-shrink: 0;
+      margin-top: 0.125rem;
+    }
+
+    .context-annotation__text {
+      font-size: 1rem;
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    /* =====================================================
+       SECTION 3: Claude Working
+       ===================================================== */
+
+    .claude-interface {
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px var(--glass-border),
+        0 24px 64px rgba(0, 0, 0, 0.5);
+    }
+
+    .claude-titlebar {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.625rem 1rem;
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .claude-titlebar__dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .claude-titlebar__dots span {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .claude-titlebar__dots span:nth-child(1) { background: #EF4444; }
+    .claude-titlebar__dots span:nth-child(2) { background: #F59E0B; }
+    .claude-titlebar__dots span:nth-child(3) { background: #10B981; }
+
+    .claude-titlebar__label {
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+    }
+
+    .claude-chat {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .chat-msg {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+
+    .chat-msg__avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .chat-msg__avatar--user {
+      background: var(--surface-4);
+      color: var(--text-primary);
+    }
+
+    .chat-msg__avatar--claude {
+      background: linear-gradient(135deg, var(--accent), #7c3aed);
+      color: #fff;
+    }
+
+    .chat-msg__body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .chat-msg__name {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-tertiary);
+      margin-bottom: 0.375rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .chat-msg__text {
+      font-size: 0.9375rem;
+      color: var(--text-primary);
+      line-height: 1.65;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 0.875rem 1.125rem;
+    }
+
+    .chat-msg__text code {
+      font-family: var(--font-mono);
+      font-size: 0.85em;
+      background: var(--surface-3);
+      color: var(--accent-hover);
+      padding: 0.15em 0.4em;
+      border-radius: var(--radius-sm);
+    }
+
+    .chat-msg__text ul {
+      margin: 0.625rem 0 0;
+      padding-left: 1.25rem;
+      color: var(--text-primary);
+    }
+
+    .chat-msg__text li {
+      margin-bottom: 0.5rem;
+      line-height: 1.55;
+    }
+
+    .chat-msg__text .finding-label {
+      display: inline-block;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.125rem 0.5rem;
+      border-radius: 99px;
+      margin-right: 0.375rem;
+      vertical-align: middle;
+    }
+
+    .finding-label--over {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--amber);
+    }
+
+    .finding-label--under {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--green);
+    }
+
+    .finding-label--trend {
+      background: rgba(239, 68, 68, 0.12);
+      color: var(--red);
+    }
+
+    /* =====================================================
+       SECTION 4: Before / After
+       ===================================================== */
+
+    .before-after {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 0;
+      align-items: stretch;
+    }
+
+    .ba-panel {
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      position: relative;
+    }
+
+    .ba-panel--before {
+      background: var(--before-bg);
+      border: 1px solid var(--before-border);
+    }
+
+    .ba-panel--after {
+      background: var(--after-bg);
+      border: 1px solid var(--after-border);
+    }
+
+    .ba-panel__label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+    }
+
+    .ba-panel--before .ba-panel__label { color: var(--red); }
+    .ba-panel--after .ba-panel__label { color: var(--green); }
+
+    .ba-panel__label svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .ba-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+    }
+
+    .ba-divider__arrow {
+      width: 36px;
+      height: 36px;
+      background: var(--surface-3);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-tertiary);
+    }
+
+    .ba-divider__arrow svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Before: raw text */
+    .raw-text {
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      line-height: 1.8;
+      color: var(--text-tertiary);
+    }
+
+    .raw-text p {
+      color: var(--text-tertiary);
+      margin-bottom: 0.75rem;
+    }
+
+    /* After: corporate report */
+    .corp-report {
+      font-size: 0.875rem;
+    }
+
+    .corp-report__header {
+      background: #222D59;
+      color: #fff;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius) var(--radius) 0 0;
+      margin-bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .corp-report__header h4 {
+      margin: 0;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .corp-report__header span {
+      font-size: 0.6875rem;
+      opacity: 0.7;
+    }
+
+    .corp-report__body {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 var(--radius) var(--radius);
+      padding: 1rem;
+    }
+
+    .corp-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.625rem;
+      margin-bottom: 0.875rem;
+    }
+
+    .corp-metric {
+      background: var(--surface-3);
+      border-radius: var(--radius-sm);
+      padding: 0.625rem 0.75rem;
+      text-align: center;
+    }
+
+    .corp-metric__label {
+      font-size: 0.625rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-tertiary);
+      margin-bottom: 0.25rem;
+    }
+
+    .corp-metric__value {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .corp-metric__delta {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      margin-top: 0.125rem;
+    }
+
+    .corp-metric__delta--up { color: var(--green); }
+    .corp-metric__delta--down { color: var(--red); }
+
+    .corp-report__text {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .corp-accent { color: #2FAA51; font-weight: 600; }
+
+    /* =====================================================
+       "Med design-plugin" — Premium report
+       Full cyberpunk-finance glass panel aesthetic
+       ===================================================== */
+
+    @keyframes pr-pulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 6px var(--accent-glow); }
+      50% { opacity: 0.5; box-shadow: 0 0 2px var(--accent-glow); }
+    }
+
+    @keyframes pr-shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    .premium-report {
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      position: relative;
+      background:
+        radial-gradient(ellipse 80% 60% at 70% 20%, rgba(99, 102, 241, 0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 20% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 60%),
+        var(--surface-1);
+      border: 1px solid var(--glass-border);
+      box-shadow:
+        0 4px 40px rgba(0, 0, 0, 0.4),
+        0 1px 3px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06),
+        inset 0 0 60px rgba(99, 102, 241, 0.015);
+    }
+
+    /* Animated gradient accent bar */
+    .pr__accent {
+      height: 3px;
+      background: linear-gradient(
+        90deg,
+        var(--accent) 0%,
+        var(--accent-hover) 25%,
+        var(--cyan) 50%,
+        var(--green) 75%,
+        var(--accent) 100%
+      );
+      background-size: 200% 100%;
+      animation: pr-shimmer 6s linear infinite;
+    }
+
+    /* Header */
+    .pr__header {
+      padding: 0.625rem 0.875rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .pr__brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .pr__logo {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      font-size: 0.8125rem;
+      font-weight: 800;
+      color: #fff;
+      box-shadow:
+        0 0 16px rgba(99, 102, 241, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    .pr__org {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: 0.04em;
+    }
+
+    .pr__conf {
+      display: inline-block;
+      font-size: 0.4375rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent-hover);
+      background: var(--accent-soft);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      padding: 0.0625rem 0.375rem;
+      border-radius: 99px;
+      margin-top: 2px;
+    }
+
+    .pr__title-block {
+      text-align: right;
+    }
+
+    .pr__title {
+      margin: 0;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: 0.01em;
+    }
+
+    .pr__period {
+      font-family: var(--font-mono);
+      font-size: 0.5rem;
+      color: var(--text-tertiary);
+      letter-spacing: 0.04em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ---- Hero KPI (EBITDA) ---- */
+    .pr__hero {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.625rem 0.875rem;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.04) 0%, rgba(99, 102, 241, 0.02) 100%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .pr__hero-num {
+      display: flex;
+      align-items: baseline;
+      gap: 0.25rem;
+    }
+
+    .pr__hero-val {
+      font-family: var(--font-mono);
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--green);
+      line-height: 1;
+      letter-spacing: -0.04em;
+      font-variant-numeric: tabular-nums;
+      text-shadow: 0 0 30px rgba(16, 185, 129, 0.3);
+    }
+
+    .pr__hero-unit {
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      font-weight: 600;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .pr__hero-meta {
+      flex: 1;
+    }
+
+    .pr__hero-label {
+      font-size: 0.5625rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-tertiary);
+      margin-bottom: 0.125rem;
+    }
+
+    .pr__hero-delta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 700;
+      color: var(--green);
+      background: var(--green-soft);
+      padding: 0.125rem 0.5rem;
+      border-radius: 99px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .pr__hero-delta svg {
+      width: 10px;
+      height: 10px;
+    }
+
+    /* Chart area */
+    .pr__hero-chart {
+      flex-shrink: 0;
+      width: 120px;
+      height: 44px;
+      position: relative;
+    }
+
+    .pr__hero-chart svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .pr__chart-grid {
+      stroke: rgba(255, 255, 255, 0.04);
+      stroke-width: 0.5;
+    }
+
+    /* ---- Supporting KPI row ---- */
+    .pr__kpis {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.375rem;
+      padding: 0.5rem 0.875rem;
+    }
+
+    .pr__kpi {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 0.4375rem 0.5rem;
+    }
+
+    .pr__kpi--warn {
+      border-left-color: var(--amber);
+    }
+
+    .pr__kpi-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.125rem;
+    }
+
+    .pr__kpi-label {
+      font-size: 0.5rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-tertiary);
+    }
+
+    .pr__kpi-badge {
+      font-family: var(--font-mono);
+      font-size: 0.4375rem;
+      font-weight: 700;
+      padding: 0.0625rem 0.3125rem;
+      border-radius: 99px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .pr__kpi-badge--up {
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .pr__kpi-badge--warn {
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+
+    .pr__kpi-row {
+      display: flex;
+      align-items: baseline;
+      gap: 0.25rem;
+    }
+
+    .pr__kpi-val {
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+      line-height: 1.2;
+    }
+
+    .pr__kpi--warn .pr__kpi-val {
+      color: var(--amber);
+    }
+
+    .pr__kpi-unit {
+      font-family: var(--font-mono);
+      font-size: 0.4375rem;
+      font-weight: 500;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .pr__kpi-sub {
+      font-family: var(--font-mono);
+      font-size: 0.4375rem;
+      color: var(--text-tertiary);
+      font-variant-numeric: tabular-nums;
+      opacity: 0.6;
+    }
+
+    /* ---- Area barometer ---- */
+    .pr__areas {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.25rem;
+      padding: 0 0.875rem 0.5rem;
+    }
+
+    .pr__area {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.3125rem 0.4375rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3125rem;
+    }
+
+    .pr__tl {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .pr__tl--green {
+      background: var(--green);
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+    }
+
+    .pr__tl--amber {
+      background: var(--amber);
+      box-shadow: 0 0 8px rgba(245, 158, 11, 0.35);
+    }
+
+    .pr__tl--red {
+      background: var(--red);
+      box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+    }
+
+    .pr__area-name {
+      font-size: 0.4375rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .pr__area-val {
+      font-family: var(--font-mono);
+      font-size: 0.4375rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-left: auto;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ---- Executive summary ---- */
+    .pr__summary {
+      padding: 0.4375rem 0.875rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .pr__summary-label {
+      font-size: 0.4375rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent-hover);
+      margin-bottom: 0.1875rem;
+    }
+
+    .pr__summary p {
+      font-size: 0.625rem;
+      line-height: 1.65;
+      color: var(--text-secondary);
+      margin: 0;
+    }
+
+    .pr__hl-warn { color: var(--amber); font-weight: 600; }
+    .pr__hl-ok { color: var(--green); font-weight: 600; }
+
+    /* ---- Footer ---- */
+    .pr__footer {
+      padding: 0.3125rem 0.875rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255, 255, 255, 0.03);
+      font-family: var(--font-mono);
+      font-size: 0.375rem;
+      color: var(--text-tertiary);
+      opacity: 0.6;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .pr__footer-powered {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .pr__footer-dot {
+      width: 5px;
+      height: 5px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pr-pulse 2s ease-in-out infinite;
+    }
+
+    /* =====================================================
+       SECTION 5: Iteration
+       ===================================================== */
+
+    .iteration-chat {
+      max-width: 720px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .iter-msg {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+
+    .iter-msg--user {
+      flex-direction: row-reverse;
+    }
+
+    .iter-bubble {
+      max-width: 80%;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+      padding: 0.875rem 1.125rem;
+      border-radius: var(--radius-lg);
+    }
+
+    .iter-msg--user .iter-bubble {
+      background: rgba(99, 102, 241, 0.12);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      color: var(--text-primary);
+    }
+
+    .iter-msg--claude .iter-bubble {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+    }
+
+    .iter-bubble__revision {
+      font-size: 0.8125rem;
+      font-style: italic;
+      color: var(--text-secondary);
+      margin-top: 0.5rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid var(--border);
+      line-height: 1.7;
+    }
+
+    .iter-arrow {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-tertiary);
+      font-size: 0.75rem;
+      padding: 0.5rem 0 0.5rem 2.5rem;
+    }
+
+    .iter-arrow svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* =====================================================
+       SECTION 6: Final Report
+       ===================================================== */
+
+    .final-report {
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px var(--glass-border),
+        0 32px 80px rgba(0, 0, 0, 0.5);
+      max-width: 780px;
+      margin: 0 auto;
+    }
+
+    .final-report__bar {
+      background: #222D59;
+      padding: 1.125rem 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .final-report__bar-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+    }
+
+    .final-report__logo {
+      width: 28px;
+      height: 28px;
+      background: #2FAA51;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.8125rem;
+    }
+
+    .final-report__company {
+      font-size: 0.8125rem;
+      color: rgba(255,255,255,0.85);
+      font-weight: 500;
+    }
+
+    .final-report__date {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.5);
+    }
+
+    .final-report__content {
+      padding: 2rem 1.75rem;
+    }
+
+    .final-report__title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .final-report__period {
+      font-size: 0.875rem;
+      color: var(--text-tertiary);
+      margin-bottom: 1.75rem;
+    }
+
+    .final-report__summary {
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .final-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .final-metric {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.125rem;
+      text-align: center;
+    }
+
+    .final-metric__label {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-tertiary);
+      margin-bottom: 0.5rem;
+    }
+
+    .final-metric__value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1;
+    }
+
+    .final-metric__delta {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      margin-top: 0.375rem;
+    }
+
+    .final-metric__delta--up { color: var(--green); }
+    .final-metric__delta--down { color: var(--red); }
+
+    /* SVG Bar chart */
+    .final-chart {
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .final-chart__title {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+    }
+
+    .final-chart svg {
+      width: 100%;
+      height: auto;
+    }
+
+    .final-report__section-title {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.375rem;
+      border-bottom: 2px solid #222D59;
+      display: inline-block;
+    }
+
+    .final-report__text {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      margin-bottom: 1.5rem;
+    }
+
+    .final-report__actions {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .final-report__actions li {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      padding: 0.5rem 0 0.5rem 1.5rem;
+      position: relative;
+      border-bottom: 1px solid rgba(30, 41, 59, 0.4);
+    }
+
+    .final-report__actions li:last-child {
+      border-bottom: none;
+    }
+
+    .final-report__actions li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.875rem;
+      width: 8px;
+      height: 8px;
+      background: #2FAA51;
+      border-radius: 2px;
+    }
+
+    /* =====================================================
+       CTA Section
+       ===================================================== */
+
+    .reveal-cta {
+      text-align: center;
+      padding: 5rem var(--content-padding-x) 6rem;
+    }
+
+    .reveal-cta__time {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 3.5rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, var(--accent-hover) 0%, #a78bfa 50%, #60a5fa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.75rem;
+    }
+
+    .reveal-cta__caption {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      margin-bottom: 2.5rem;
+    }
+
+    /* =====================================================
+       Footer
+       ===================================================== */
+
+    .reveal-footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem var(--content-padding-x);
+      text-align: center;
+    }
+
+    .reveal-footer__text {
+      font-size: 0.8125rem;
+      color: var(--text-tertiary);
+    }
+
+    /* =====================================================
+       Reduced motion
+       ===================================================== */
+
+    @media (prefers-reduced-motion: reduce) {
+      .animate-on-scroll {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+      }
+    }
+
+    /* =====================================================
+       Mobile responsive
+       ===================================================== */
+
+    @media (max-width: 768px) {
+      .reveal-section {
+        min-height: auto;
+        padding: 3rem var(--content-padding-x);
+      }
+
+      .context-files {
+        grid-template-columns: 1fr;
+      }
+
+      .before-after {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .ba-divider {
+        width: auto;
+        height: 48px;
+      }
+
+      .ba-divider__arrow {
+        transform: rotate(90deg);
+      }
+
+      .corp-metrics,
+      .final-metrics {
+        grid-template-columns: 1fr;
+      }
+
+      .iter-bubble {
+        max-width: 100%;
+      }
+
+      .reveal-cta__time {
+        font-size: 2.5rem;
+      }
+
+      .final-report__content {
+        padding: 1.25rem;
+      }
+
+      .final-report__bar {
+        padding: 0.875rem 1.25rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================================
+       NAV
+       ============================================================ -->
+  <nav class="academy-nav">
+    <div class="academy-nav__inner">
+      <a href="index.html" class="academy-nav__brand">
+        <svg class="academy-nav__brand-logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c3.87 0 7 3.13 7 7s-3.13 7-7 7-7-3.13-7-7 3.13-7 7-7zm0 3c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 3c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z" fill="currentColor" opacity="0.9"/>
+        </svg>
+        <span class="academy-nav__brand-name">AI</span>
+        <span class="academy-nav__brand-sep">/</span>
+        <span class="academy-nav__brand-name" style="color: var(--accent-hover);">Academy</span>
+      </a>
+      <div class="academy-nav__links">
+        <a href="reveal.html" class="academy-nav__link module-nav-link active" aria-current="page">0 Reveal</a>
+        <a href="cowork.html" class="academy-nav__link module-nav-link">1 Cowork</a>
+        <a href="rapport.html" class="academy-nav__link module-nav-link">2 Rapport</a>
+        <a href="automation.html" class="academy-nav__link module-nav-link">3 Automation</a>
+        <a href="claude-code.html" class="academy-nav__link module-nav-link">4 Claude Code</a>
+        <a href="transformation.html" class="academy-nav__link module-nav-link">Advisory</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Progress bar -->
+  <div class="progress-bar" aria-hidden="true"></div>
+
+  <main>
+
+    <!-- ============================================================
+         SECTION 1: "Problemet" — Messy Excel
+         ============================================================ -->
+    <section class="reveal-section" data-section="problemet" style="background: radial-gradient(ellipse 80% 60% at 50% 80%, rgba(239,68,68,0.04) 0%, transparent 70%);">
+      <div class="reveal-section__inner">
+
+        <div class="animate-on-scroll">
+          <span class="reveal-section__step">Steg 1 av 6</span>
+          <h2 class="reveal-section__title">Problemet</h2>
+          <p class="reveal-section__subtitle">
+            12 månaders data. Ingen struktur. Ingen analys. Bara rader, kolumner och kaos.
+          </p>
+        </div>
+
+        <div class="excel-mockup animate-on-scroll" data-delay="200">
+          <div class="excel-toolbar">
+            <div class="excel-toolbar__dots">
+              <span></span><span></span><span></span>
+            </div>
+            <span class="excel-toolbar__title">Kvartalsdata_2025_FINAL_v3_korrigerad (2).xlsx</span>
+          </div>
+          <div class="excel-sheet">
+            <table>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Konto</th>
+                  <th>Beskrivning</th>
+                  <th>Jan</th>
+                  <th>Feb</th>
+                  <th>Mar</th>
+                  <th>Apr</th>
+                  <th>Maj</th>
+                  <th>Jun</th>
+                  <th>Jul</th>
+                  <th>Aug</th>
+                  <th>Sep</th>
+                  <th>Okt</th>
+                  <th>Nov</th>
+                  <th>Dec</th>
+                  <th>Helår</th>
+                  <th>Budget</th>
+                  <th>Avvikelse</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>3010</td>
+                  <td>Intäkter vara</td>
+                  <td>1 245 000</td>
+                  <td>1 312 500</td>
+                  <td>1 189 000</td>
+                  <td>1 356 200</td>
+                  <td>1 278 900</td>
+                  <td>1 401 300</td>
+                  <td>987 600</td>
+                  <td>1 145 200</td>
+                  <td>1 367 800</td>
+                  <td>1 423 100</td>
+                  <td>1 389 000</td>
+                  <td>1 512 400</td>
+                  <td>15 608 000</td>
+                  <td>14 400 000</td>
+                  <td class="cell--highlight">+8.4%</td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>3020</td>
+                  <td>Intäkter tjänster</td>
+                  <td>890 000</td>
+                  <td>912 300</td>
+                  <td>845 600</td>
+                  <td>978 400</td>
+                  <td>1 023 000</td>
+                  <td>1 087 500</td>
+                  <td>756 200</td>
+                  <td>834 100</td>
+                  <td>1 045 700</td>
+                  <td>1 112 300</td>
+                  <td>1 067 800</td>
+                  <td>1 198 600</td>
+                  <td>11 751 500</td>
+                  <td>11 200 000</td>
+                  <td>+4.9%</td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>4010</td>
+                  <td>Inköp varor</td>
+                  <td>-523 400</td>
+                  <td>-567 800</td>
+                  <td>-498 200</td>
+                  <td class="cell--error">-712 300</td>
+                  <td>-545 600</td>
+                  <td>-589 100</td>
+                  <td>-412 000</td>
+                  <td>-478 900</td>
+                  <td>-601 200</td>
+                  <td>-623 400</td>
+                  <td>-587 300</td>
+                  <td>-645 200</td>
+                  <td>-6 784 400</td>
+                  <td>-6 200 000</td>
+                  <td class="cell--error">-9.4%</td>
+                </tr>
+                <tr>
+                  <td>4</td>
+                  <td>5010</td>
+                  <td>Löner</td>
+                  <td>-1 456 000</td>
+                  <td>-1 456 000</td>
+                  <td>-1 478 200</td>
+                  <td>-1 478 200</td>
+                  <td>-1 512 000</td>
+                  <td>-1 512 000</td>
+                  <td>-1 512 000</td>
+                  <td>-1 534 800</td>
+                  <td>-1 534 800</td>
+                  <td>-1 567 000</td>
+                  <td>-1 567 000</td>
+                  <td class="cell--warn">-1 598 400</td>
+                  <td>-18 206 400</td>
+                  <td>-17 472 000</td>
+                  <td class="cell--warn">-4.2%</td>
+                </tr>
+                <tr>
+                  <td>5</td>
+                  <td>5210</td>
+                  <td>Sociala avgifter</td>
+                  <td>-457 600</td>
+                  <td>-457 600</td>
+                  <td>-464 500</td>
+                  <td>-464 500</td>
+                  <td>-475 300</td>
+                  <td>-475 300</td>
+                  <td>-475 300</td>
+                  <td>-482 500</td>
+                  <td>-482 500</td>
+                  <td>-492 600</td>
+                  <td>-492 600</td>
+                  <td>-502 500</td>
+                  <td>-5 722 800</td>
+                  <td>-5 500 000</td>
+                  <td>-4.1%</td>
+                </tr>
+                <tr>
+                  <td>6</td>
+                  <td>6110</td>
+                  <td>Kontorsmaterial</td>
+                  <td>-23 400</td>
+                  <td>-18 900</td>
+                  <td class="cell--missing">—</td>
+                  <td>-31 200</td>
+                  <td>-15 600</td>
+                  <td class="cell--missing">—</td>
+                  <td>-8 900</td>
+                  <td>-22 100</td>
+                  <td>-19 700</td>
+                  <td>-27 800</td>
+                  <td>-14 300</td>
+                  <td>-21 600</td>
+                  <td class="cell--missing">—</td>
+                  <td>-240 000</td>
+                  <td class="cell--missing">—</td>
+                </tr>
+                <tr>
+                  <td>7</td>
+                  <td>6210</td>
+                  <td>Telefon & internet</td>
+                  <td>-45 200</td>
+                  <td>-45 200</td>
+                  <td>-45 200</td>
+                  <td>-45 200</td>
+                  <td>-45 200</td>
+                  <td>-52 800</td>
+                  <td>-52 800</td>
+                  <td>-52 800</td>
+                  <td>-52 800</td>
+                  <td>-52 800</td>
+                  <td>-52 800</td>
+                  <td>-52 800</td>
+                  <td>-593 600</td>
+                  <td>-540 000</td>
+                  <td>-9.9%</td>
+                </tr>
+                <tr>
+                  <td>8</td>
+                  <td>6530</td>
+                  <td>Konsulttjänster</td>
+                  <td>-78 000</td>
+                  <td>-124 500</td>
+                  <td>-89 000</td>
+                  <td class="cell--warn">-234 000</td>
+                  <td>-156 700</td>
+                  <td>-187 300</td>
+                  <td>-67 000</td>
+                  <td>-112 400</td>
+                  <td class="cell--warn">-245 800</td>
+                  <td>-198 000</td>
+                  <td>-167 200</td>
+                  <td class="cell--warn">-289 000</td>
+                  <td>-1 948 900</td>
+                  <td>-1 680 000</td>
+                  <td class="cell--warn">+16%</td>
+                </tr>
+                <tr>
+                  <td>9</td>
+                  <td>6540</td>
+                  <td>IT & Licenser</td>
+                  <td>-89 000</td>
+                  <td>-89 000</td>
+                  <td>-89 000</td>
+                  <td>-112 000</td>
+                  <td>-112 000</td>
+                  <td>-112 000</td>
+                  <td>-112 000</td>
+                  <td>-112 000</td>
+                  <td>-112 000</td>
+                  <td>-112 000</td>
+                  <td>-112 000</td>
+                  <td>-112 000</td>
+                  <td>-1 284 000</td>
+                  <td>-1 700 000</td>
+                  <td class="cell--highlight">+24.5%</td>
+                </tr>
+                <tr>
+                  <td>10</td>
+                  <td>6800</td>
+                  <td class="cell--inconsistent">Resor (ej def.)</td>
+                  <td>-12 300</td>
+                  <td class="cell--missing">—</td>
+                  <td>-8 700</td>
+                  <td>-15 400</td>
+                  <td>-23 100</td>
+                  <td>-34 200</td>
+                  <td class="cell--missing">—</td>
+                  <td>-9 800</td>
+                  <td>-18 600</td>
+                  <td>-21 300</td>
+                  <td>-14 900</td>
+                  <td class="cell--error">SEK???</td>
+                  <td class="cell--error">#REF!</td>
+                  <td>-180 000</td>
+                  <td class="cell--error">#REF!</td>
+                </tr>
+                <tr>
+                  <td>11</td>
+                  <td>7510</td>
+                  <td>Avskrivningar</td>
+                  <td>-125 000</td>
+                  <td>-125 000</td>
+                  <td>-125 000</td>
+                  <td>-125 000</td>
+                  <td>-125 000</td>
+                  <td>-125 000</td>
+                  <td>-125 000</td>
+                  <td>-125 000</td>
+                  <td>-125 000</td>
+                  <td>-125 000</td>
+                  <td>-125 000</td>
+                  <td>-125 000</td>
+                  <td>-1 500 000</td>
+                  <td>-1 500 000</td>
+                  <td>0.0%</td>
+                </tr>
+                <tr>
+                  <td>12</td>
+                  <td>8310</td>
+                  <td>Räntekostnader</td>
+                  <td>-34 200</td>
+                  <td>-34 200</td>
+                  <td>-34 200</td>
+                  <td>-34 200</td>
+                  <td>-28 500</td>
+                  <td>-28 500</td>
+                  <td>-28 500</td>
+                  <td>-28 500</td>
+                  <td>-22 800</td>
+                  <td>-22 800</td>
+                  <td>-22 800</td>
+                  <td>-22 800</td>
+                  <td>-342 000</td>
+                  <td>-360 000</td>
+                  <td>+5.0%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         SECTION 2: "Kontexten" — Context Engineering
+         ============================================================ -->
+    <section class="reveal-section" data-section="kontexten" style="background: radial-gradient(ellipse 70% 50% at 50% 50%, rgba(99,102,241,0.05) 0%, transparent 70%);">
+      <div class="reveal-section__inner">
+
+        <div class="animate-on-scroll">
+          <span class="reveal-section__step">Steg 2 av 6</span>
+          <h2 class="reveal-section__title">Kontexten</h2>
+          <p class="reveal-section__subtitle">
+            Du berättar för Claude <strong style="color: var(--text-primary);">vem du är</strong> och <strong style="color: var(--text-primary);">hur ni arbetar</strong>. Två filer. Det är allt.
+          </p>
+        </div>
+
+        <div class="context-files animate-on-scroll" data-delay="200">
+          <!-- File 1: kontext.md -->
+          <div class="context-file">
+            <div class="context-file__header">
+              <svg class="context-file__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+              <span class="context-file__name">kontext.md</span>
+            </div>
+            <div class="context-file__body">
+              <span class="comment"># Företagskontext</span><br><br>
+              <span class="key">Roll:</span> <span class="value">Controller</span><br>
+              <span class="key">Företag:</span> <span class="value">Medelstort tjänsteföretag, 180 anställda</span><br>
+              <span class="key">Bransch:</span> <span class="value">B2B-tjänster</span><br><br>
+              <span class="comment"># Rapportmottagare</span><br><br>
+              <span class="key">Primär:</span> <span class="value">VD och ledningsgrupp</span><br>
+              <span class="key">Sekundär:</span> <span class="value">Styrelse (kvartalsvis)</span><br><br>
+              <span class="comment"># Tonalitet</span><br><br>
+              <span class="key">Språk:</span> <span class="value">Svenska, koncist, professionellt</span><br>
+              <span class="key">Längd:</span> <span class="value">Max 2 sidor exklusive bilagor</span><br>
+              <span class="key">Fokus:</span> <span class="value">Avvikelser mot budget, trender, åtgärder</span>
+            </div>
+          </div>
+
+          <!-- File 2: grafisk_profil.md -->
+          <div class="context-file">
+            <div class="context-file__header">
+              <svg class="context-file__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                <path d="M2 17l10 5 10-5"/>
+                <path d="M2 12l10 5 10-5"/>
+              </svg>
+              <span class="context-file__name">grafisk_profil.md</span>
+            </div>
+            <div class="context-file__body">
+              <span class="comment"># Grafisk profil</span><br><br>
+              <span class="key">Primärfärg:</span> <span class="value" style="color: #7B8CDE;">#222D59</span> <span style="display:inline-block;width:12px;height:12px;background:#222D59;border-radius:2px;vertical-align:middle;"></span><br>
+              <span class="key">Sekundärfärg:</span> <span class="value">#2FAA51</span> <span style="display:inline-block;width:12px;height:12px;background:#2FAA51;border-radius:2px;vertical-align:middle;"></span><br>
+              <span class="key">Typsnitt:</span> <span class="value">Inter</span><br><br>
+              <span class="comment"># Tabeller</span><br><br>
+              <span class="key">Header-bg:</span> <span class="value" style="color: #7B8CDE;">#222D59</span><br>
+              <span class="key">Header-text:</span> <span class="value">#FFFFFF</span><br>
+              <span class="key">Positiv delta:</span> <span class="value">#2FAA51</span><br>
+              <span class="key">Negativ delta:</span> <span class="value" style="color: #EF4444;">#D94040</span><br><br>
+              <span class="comment"># Diagram</span><br><br>
+              <span class="key">Stapel primär:</span> <span class="value" style="color: #7B8CDE;">#222D59</span><br>
+              <span class="key">Linje trend:</span> <span class="value">#2FAA51</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="context-annotation animate-on-scroll" data-delay="400">
+          <svg class="context-annotation__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 16v-4"/>
+            <path d="M12 8h.01"/>
+          </svg>
+          <p class="context-annotation__text">
+            <strong>Context engineering</strong> innebär att du ger AI den bakgrund den behöver — innan du ställer frågan. Det är skillnaden mellan ett generiskt svar och ett svar anpassat för just din organisation.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         SECTION 3: "Analysen" — Claude Working
+         ============================================================ -->
+    <section class="reveal-section" data-section="analysen" style="background: radial-gradient(ellipse 60% 50% at 50% 40%, rgba(99,102,241,0.04) 0%, transparent 70%);">
+      <div class="reveal-section__inner">
+
+        <div class="animate-on-scroll">
+          <span class="reveal-section__step">Steg 3 av 6</span>
+          <h2 class="reveal-section__title">Analysen</h2>
+          <p class="reveal-section__subtitle">
+            Claude läser datan, identifierar mönster och sammanfattar de viktigaste avvikelserna — automatiskt.
+          </p>
+        </div>
+
+        <div class="claude-interface animate-on-scroll" data-delay="200">
+          <div class="claude-titlebar">
+            <div class="claude-titlebar__dots">
+              <span></span><span></span><span></span>
+            </div>
+            <span class="claude-titlebar__label">Claude Desktop</span>
+          </div>
+
+          <div class="claude-chat">
+            <!-- User message -->
+            <div class="chat-msg">
+              <div class="chat-msg__avatar chat-msg__avatar--user">DU</div>
+              <div class="chat-msg__body">
+                <div class="chat-msg__name">Användare</div>
+                <div class="chat-msg__text">
+                  Analysera <code>kvartalsdata.xlsx</code> — identifiera de tre största avvikelserna mot budget och beskriv trender.
+                </div>
+              </div>
+            </div>
+
+            <!-- Claude message -->
+            <div class="chat-msg">
+              <div class="chat-msg__avatar chat-msg__avatar--claude">C</div>
+              <div class="chat-msg__body">
+                <div class="chat-msg__name">Claude</div>
+                <div class="chat-msg__text">
+                  Jag har analyserat alla 12 konton mot budget. Här är de tre största avvikelserna:
+
+                  <ul>
+                    <li>
+                      <span class="finding-label finding-label--over">+16%</span>
+                      <strong>Konsulttjänster (6530):</strong> 1 949 TSEK vs budget 1 680 TSEK. Kraftig ökning i Q4 — december ensamt 289 TSEK. Toppar sammanfaller med projektmilstolpar.
+                    </li>
+                    <li>
+                      <span class="finding-label finding-label--under">+24.5%</span>
+                      <strong>IT &amp; Licenser (6540):</strong> 1 284 TSEK vs budget 1 700 TSEK. Besparing på 416 TSEK. Trolig orsak: senarelagd systemuppgradering.
+                    </li>
+                    <li>
+                      <span class="finding-label finding-label--trend">Trend</span>
+                      <strong>Personalkostnader (5010):</strong> Löner ökar stadigt Jan-Dec: 1 456 → 1 598 TSEK/mån (+9.8%). Helårsavvikelse -4.2% mot budget. Accelererar i H2.
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         SECTION 4: "Designen" — Before/After
+         ============================================================ -->
+    <section class="reveal-section" data-section="designen">
+      <div class="reveal-section__inner">
+
+        <div class="animate-on-scroll">
+          <span class="reveal-section__step">Steg 4 av 6</span>
+          <h2 class="reveal-section__title">Designen</h2>
+          <p class="reveal-section__subtitle">
+            Med en design-plugin och sparad grafisk profil transformeras en generisk rapport till ett professionellt styrelseunderlag — era färger, typsnitt och layoutregler appliceras automatiskt.
+          </p>
+        </div>
+
+        <div class="before-after animate-on-scroll" data-delay="200">
+          <!-- BEFORE: Generic Claude output (no plugin) -->
+          <div class="ba-panel ba-panel--before">
+            <div class="ba-panel__label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+              Utan plugin
+            </div>
+            <div class="corp-report">
+              <div class="corp-report__header">
+                <h4>Kvartalsrapport Q4 2025</h4>
+                <span>Konfidentiellt</span>
+              </div>
+              <div class="corp-report__body">
+                <div class="corp-metrics">
+                  <div class="corp-metric">
+                    <div class="corp-metric__label">Intäkter</div>
+                    <div class="corp-metric__value">27.4 <span style="font-size: 0.6em; font-weight: 500; color: var(--text-tertiary);">MSEK</span></div>
+                    <div class="corp-metric__delta corp-metric__delta--up">+6.9% vs budget</div>
+                  </div>
+                  <div class="corp-metric">
+                    <div class="corp-metric__label">Kostnader</div>
+                    <div class="corp-metric__value">-37.4 <span style="font-size: 0.6em; font-weight: 500; color: var(--text-tertiary);">MSEK</span></div>
+                    <div class="corp-metric__delta corp-metric__delta--down">-5.7% vs budget</div>
+                  </div>
+                  <div class="corp-metric">
+                    <div class="corp-metric__label">EBITDA</div>
+                    <div class="corp-metric__value" style="color: #2FAA51;">5.0 <span style="font-size: 0.6em; font-weight: 500; color: var(--text-tertiary);">MSEK</span></div>
+                    <div class="corp-metric__delta corp-metric__delta--up">+12.3%</div>
+                  </div>
+                </div>
+                <p class="corp-report__text">
+                  Intäkterna överträffar budget med <span class="corp-accent">+6.9%</span> drivet av stark tjänsteförsäljning i Q4. Kostnadssidan visar blandad bild: konsultkostnader <span style="color: var(--amber);">+16% över budget</span> men IT-besparingar kompenserar.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- ARROW -->
+          <div class="ba-divider">
+            <div class="ba-divider__arrow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </div>
+          </div>
+
+          <!-- AFTER: With design plugin + graphic profile -->
+          <div class="ba-panel ba-panel--after">
+            <div class="ba-panel__label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              Med design-plugin
+            </div>
+            <!-- Glass-panel report -->
+            <div class="premium-report">
+              <div class="pr__accent"></div>
+              <!-- Header -->
+              <div class="pr__header">
+                <div class="pr__brand">
+                  <div class="pr__logo">A</div>
+                  <div>
+                    <div class="pr__org">Acme Corp</div>
+                    <span class="pr__conf">Konfidentiellt</span>
+                  </div>
+                </div>
+                <div class="pr__title-block">
+                  <h4 class="pr__title">Kvartalsrapport</h4>
+                  <span class="pr__period">Q4 · 2025-10-01 — 2025-12-31</span>
+                </div>
+              </div>
+              <!-- Hero KPI -->
+              <div class="pr__hero">
+                <div>
+                  <div class="pr__hero-label">EBITDA</div>
+                  <div class="pr__hero-num">
+                    <span class="pr__hero-val">5.0</span>
+                    <span class="pr__hero-unit">MSEK</span>
+                  </div>
+                  <div class="pr__hero-delta">
+                    <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="1,7 5,3 9,1"/></svg>
+                    +12.3% vs plan
+                  </div>
+                </div>
+                <div class="pr__hero-chart">
+                  <svg viewBox="0 0 120 44" preserveAspectRatio="none">
+                    <!-- Grid -->
+                    <line x1="0" y1="11" x2="120" y2="11" class="pr__chart-grid"/>
+                    <line x1="0" y1="22" x2="120" y2="22" class="pr__chart-grid"/>
+                    <line x1="0" y1="33" x2="120" y2="33" class="pr__chart-grid"/>
+                    <!-- Budget line -->
+                    <line x1="0" y1="20" x2="120" y2="20" stroke="var(--text-tertiary)" stroke-width="0.5" stroke-dasharray="3 2" opacity="0.4"/>
+                    <!-- Area fill -->
+                    <defs>
+                      <linearGradient id="ebitda-fill" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#10B981" stop-opacity="0.3"/>
+                        <stop offset="100%" stop-color="#10B981" stop-opacity="0"/>
+                      </linearGradient>
+                    </defs>
+                    <path d="M0,36 L10,34 20,32 30,35 40,30 50,28 60,25 70,22 80,18 90,14 100,10 110,7 120,4 L120,44 L0,44 Z" fill="url(#ebitda-fill)"/>
+                    <!-- Line -->
+                    <polyline points="0,36 10,34 20,32 30,35 40,30 50,28 60,25 70,22 80,18 90,14 100,10 110,7 120,4" fill="none" stroke="#10B981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <!-- Endpoint glow -->
+                    <circle cx="120" cy="4" r="3" fill="#10B981" opacity="0.3"/>
+                    <circle cx="120" cy="4" r="1.5" fill="#10B981"/>
+                  </svg>
+                </div>
+              </div>
+              <!-- Supporting KPIs -->
+              <div class="pr__kpis">
+                <div class="pr__kpi">
+                  <div class="pr__kpi-top">
+                    <span class="pr__kpi-label">Intäkter</span>
+                    <span class="pr__kpi-badge pr__kpi-badge--up">+6.9%</span>
+                  </div>
+                  <div class="pr__kpi-row">
+                    <span class="pr__kpi-val">27.4</span>
+                    <span class="pr__kpi-unit">MSEK</span>
+                  </div>
+                  <div class="pr__kpi-sub">budget 25.6</div>
+                </div>
+                <div class="pr__kpi pr__kpi--warn">
+                  <div class="pr__kpi-top">
+                    <span class="pr__kpi-label">Kostnader</span>
+                    <span class="pr__kpi-badge pr__kpi-badge--warn">+5.7%</span>
+                  </div>
+                  <div class="pr__kpi-row">
+                    <span class="pr__kpi-val">-37.4</span>
+                    <span class="pr__kpi-unit">MSEK</span>
+                  </div>
+                  <div class="pr__kpi-sub">budget -35.4</div>
+                </div>
+              </div>
+              <!-- Area barometer -->
+              <div class="pr__areas">
+                <div class="pr__area">
+                  <span class="pr__tl pr__tl--green"></span>
+                  <span class="pr__area-name">Tjänster</span>
+                  <span class="pr__area-val">+4.9%</span>
+                </div>
+                <div class="pr__area">
+                  <span class="pr__tl pr__tl--amber"></span>
+                  <span class="pr__area-name">Konsult</span>
+                  <span class="pr__area-val">+16%</span>
+                </div>
+                <div class="pr__area">
+                  <span class="pr__tl pr__tl--green"></span>
+                  <span class="pr__area-name">IT</span>
+                  <span class="pr__area-val">-24.5%</span>
+                </div>
+                <div class="pr__area">
+                  <span class="pr__tl pr__tl--green"></span>
+                  <span class="pr__area-name">Varor</span>
+                  <span class="pr__area-val">+8.4%</span>
+                </div>
+                <div class="pr__area">
+                  <span class="pr__tl pr__tl--red"></span>
+                  <span class="pr__area-name">Personal</span>
+                  <span class="pr__area-val">+9.8%</span>
+                </div>
+                <div class="pr__area">
+                  <span class="pr__tl pr__tl--green"></span>
+                  <span class="pr__area-name">Ränta</span>
+                  <span class="pr__area-val">-5.0%</span>
+                </div>
+              </div>
+              <!-- Executive summary -->
+              <div class="pr__summary">
+                <div class="pr__summary-label">Executive Summary</div>
+                <p>Intäkterna överträffar budget med <strong>+6.9%</strong>. Konsultkostnader <span class="pr__hl-warn">+16%</span> — ramavtalsöversyn rekommenderas. IT-besparingar <span class="pr__hl-ok">-24.5%</span> kompenserar. Personaltrend <span class="pr__hl-warn">+9.8%</span> kräver budgetjustering.</p>
+              </div>
+              <!-- Footer -->
+              <div class="pr__footer">
+                <div class="pr__footer-powered">
+                  <span class="pr__footer-dot"></span>
+                  Genererad av AI
+                </div>
+                <span>1 / 4 · 2025-12-31T09:14:02Z</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         SECTION 5: "Iterationen" — Feedback Loop
+         ============================================================ -->
+    <section class="reveal-section" data-section="iterationen" style="background: radial-gradient(ellipse 60% 50% at 30% 50%, rgba(16,185,129,0.04) 0%, transparent 70%);">
+      <div class="reveal-section__inner">
+
+        <div class="animate-on-scroll">
+          <span class="reveal-section__step">Steg 5 av 6</span>
+          <h2 class="reveal-section__title">Iterationen</h2>
+          <p class="reveal-section__subtitle">
+            Första försöket är alltid en draft. Du itererar tills du är nöjd — precis som med en kollega.
+          </p>
+        </div>
+
+        <div class="iteration-chat animate-on-scroll" data-delay="200">
+
+          <!-- User 1 -->
+          <div class="iter-msg iter-msg--user">
+            <div class="iter-bubble">
+              Sammanfattningen är för lång — max 100 ord. Och skippa avskrivningar, det är inte relevant för LG.
+            </div>
+          </div>
+
+          <!-- Claude 1 -->
+          <div class="iter-msg iter-msg--claude">
+            <div class="iter-bubble">
+              Förstått. Här är en kortare version:
+              <div class="iter-bubble__revision">
+                "Helårsintäkterna landade på 27.4 MSEK, 6.9% över budget. Konsultkostnader (+16%) driver kostnadsökningen men kompenseras delvis av IT-besparingar (-24.5%). Personalkostnaderna visar en accelererande trend i H2 som kräver uppmärksamhet. EBITDA 5.0 MSEK, +12.3% mot plan."
+              </div>
+            </div>
+          </div>
+
+          <div class="iter-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            Iteration 2
+          </div>
+
+          <!-- User 2 -->
+          <div class="iter-msg iter-msg--user">
+            <div class="iter-bubble">
+              Bra. Lägg till en slutsats om trenden i personalkostnader — vad innebär +9.8% om den fortsätter?
+            </div>
+          </div>
+
+          <!-- Claude 2 -->
+          <div class="iter-msg iter-msg--claude">
+            <div class="iter-bubble">
+              Tillagt:
+              <div class="iter-bubble__revision">
+                "Om löneutvecklingen (+9.8% jan-dec) fortsätter i samma takt innebär det en årlig merkostnad på ca 1.7 MSEK jämfört med ingångsnivån — motsvarande 34% av årets EBITDA. Rekommendation: budgetjustering och resursplanering behöver adresseras i Q1."
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         SECTION 6: "Resultatet" — Final Report
+         ============================================================ -->
+    <section class="reveal-section" data-section="resultatet" style="background: radial-gradient(ellipse 60% 60% at 50% 70%, rgba(16,185,129,0.05) 0%, transparent 70%);">
+      <div class="reveal-section__inner" style="max-width: 860px;">
+
+        <div class="animate-on-scroll" style="text-align: center; margin-bottom: 3rem;">
+          <span class="reveal-section__step">Steg 6 av 6</span>
+          <h2 class="reveal-section__title" style="text-align: center;">Resultatet</h2>
+          <p class="reveal-section__subtitle" style="text-align: center; margin-left: auto; margin-right: auto;">
+            Från rådata till beslut. Ett komplett styrelseunderlag.
+          </p>
+        </div>
+
+        <div class="final-report animate-on-scroll" data-delay="200">
+          <!-- Header bar -->
+          <div class="final-report__bar">
+            <div class="final-report__bar-brand">
+              <div class="final-report__logo">A</div>
+              <span class="final-report__company">Acme Solutions AB</span>
+            </div>
+            <span class="final-report__date">Konfidentiellt</span>
+          </div>
+
+          <!-- Content -->
+          <div class="final-report__content">
+            <h1 class="final-report__title">Kvartalsrapport Q4 2025</h1>
+            <p class="final-report__period">Period: januari — december 2025 &middot; Rapport genererad 2026-01-15</p>
+
+            <p class="final-report__summary">
+              Helårsintäkterna landade på 27.4 MSEK, 6.9% över budget. Konsultkostnader (+16%) driver kostnadsökningen men kompenseras delvis av IT-besparingar. Personalkostnaderna visar en accelererande trend i H2 som kräver uppmärksamhet. EBITDA 5.0 MSEK, +12.3% mot plan.
+            </p>
+
+            <!-- Key Metrics -->
+            <div class="final-metrics">
+              <div class="final-metric">
+                <div class="final-metric__label">Intäkter</div>
+                <div class="final-metric__value">27.4</div>
+                <div class="final-metric__delta final-metric__delta--up">+6.9% vs budget</div>
+              </div>
+              <div class="final-metric">
+                <div class="final-metric__label">Kostnader</div>
+                <div class="final-metric__value">-37.4</div>
+                <div class="final-metric__delta final-metric__delta--down">-5.7% vs budget</div>
+              </div>
+              <div class="final-metric">
+                <div class="final-metric__label">EBITDA</div>
+                <div class="final-metric__value" style="color: #2FAA51;">5.0</div>
+                <div class="final-metric__delta final-metric__delta--up">+12.3% vs plan</div>
+              </div>
+            </div>
+
+            <!-- Chart -->
+            <div class="final-chart">
+              <div class="final-chart__title">Intäkter per kvartal (TSEK) — Utfall vs Budget</div>
+              <svg viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
+                <!-- Grid lines -->
+                <line x1="60" y1="20" x2="60" y2="170" stroke="#1E293B" stroke-width="1"/>
+                <line x1="60" y1="170" x2="580" y2="170" stroke="#1E293B" stroke-width="1"/>
+                <line x1="60" y1="120" x2="580" y2="120" stroke="#1E293B" stroke-width="0.5" stroke-dasharray="4,4"/>
+                <line x1="60" y1="70" x2="580" y2="70" stroke="#1E293B" stroke-width="0.5" stroke-dasharray="4,4"/>
+                <line x1="60" y1="20" x2="580" y2="20" stroke="#1E293B" stroke-width="0.5" stroke-dasharray="4,4"/>
+
+                <!-- Y-axis labels -->
+                <text x="50" y="175" fill="#64748B" font-size="10" text-anchor="end" font-family="Inter, sans-serif">0</text>
+                <text x="50" y="125" fill="#64748B" font-size="10" text-anchor="end" font-family="Inter, sans-serif">2 500</text>
+                <text x="50" y="75" fill="#64748B" font-size="10" text-anchor="end" font-family="Inter, sans-serif">5 000</text>
+                <text x="50" y="25" fill="#64748B" font-size="10" text-anchor="end" font-family="Inter, sans-serif">7 500</text>
+
+                <!-- Q1 Bars -->
+                <rect x="100" y="72" width="40" height="98" rx="3" fill="#222D59"/>
+                <rect x="145" y="80" width="40" height="90" rx="3" fill="#222D59" opacity="0.35"/>
+                <text x="132" y="190" fill="#94A3B8" font-size="11" text-anchor="middle" font-family="Inter, sans-serif">Q1</text>
+
+                <!-- Q2 Bars -->
+                <rect x="220" y="58" width="40" height="112" rx="3" fill="#222D59"/>
+                <rect x="265" y="70" width="40" height="100" rx="3" fill="#222D59" opacity="0.35"/>
+                <text x="252" y="190" fill="#94A3B8" font-size="11" text-anchor="middle" font-family="Inter, sans-serif">Q2</text>
+
+                <!-- Q3 Bars -->
+                <rect x="340" y="82" width="40" height="88" rx="3" fill="#222D59"/>
+                <rect x="385" y="70" width="40" height="100" rx="3" fill="#222D59" opacity="0.35"/>
+                <text x="372" y="190" fill="#94A3B8" font-size="11" text-anchor="middle" font-family="Inter, sans-serif">Q3</text>
+
+                <!-- Q4 Bars -->
+                <rect x="460" y="42" width="40" height="128" rx="3" fill="#2FAA51"/>
+                <rect x="505" y="60" width="40" height="110" rx="3" fill="#2FAA51" opacity="0.35"/>
+                <text x="492" y="190" fill="#94A3B8" font-size="11" text-anchor="middle" font-family="Inter, sans-serif">Q4</text>
+
+                <!-- Legend -->
+                <rect x="200" y="4" width="10" height="10" rx="2" fill="#222D59"/>
+                <text x="215" y="13" fill="#94A3B8" font-size="10" font-family="Inter, sans-serif">Utfall</text>
+                <rect x="260" y="4" width="10" height="10" rx="2" fill="#222D59" opacity="0.35"/>
+                <text x="275" y="13" fill="#94A3B8" font-size="10" font-family="Inter, sans-serif">Budget</text>
+              </svg>
+            </div>
+
+            <!-- Trend analysis -->
+            <div style="margin-bottom: 2rem;">
+              <div class="final-report__section-title">Trendanalys — Personalkostnader</div>
+              <p class="final-report__text">
+                Lönekostnaderna ökade med 9.8% under året (1 456 TSEK/mån i januari till 1 598 TSEK/mån i december). Ökningen accelererar i H2 med lönerevision i juni (+3.5%) och nyanställningar i september. Om trenden fortsätter innebär det en årlig merkostnad på ca 1.7 MSEK jämfört med ingångsnivån — motsvarande 34% av årets EBITDA.
+              </p>
+            </div>
+
+            <!-- Rekommenderade åtgärder -->
+            <div>
+              <div class="final-report__section-title">Beslutspunkter</div>
+              <ul class="final-report__actions">
+                <li>Översyn av konsultavtal och upphandling — åtgärdsförslag presenteras i februarimötet</li>
+                <li>Budgetjustering personalkostnader 2026 baserad på faktisk lönetrend</li>
+                <li>IT-besparingen (416 TSEK) öronmärks för senarelagd systemuppgradering i Q2</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         CTA
+         ============================================================ -->
+    <section class="reveal-cta" data-section="cta">
+      <div class="animate-on-scroll">
+        <div class="reveal-cta__time">4 minuter</div>
+        <p class="reveal-cta__caption">Från rådata till beslut.</p>
+        <div class="hero__actions">
+          <a href="cowork.html" class="btn btn--primary btn--lg">
+            Börja med Modul 1
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+          <a href="/" class="btn btn--secondary btn--lg">Tillbaka till kursöversikt</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="reveal-footer">
+    <p class="reveal-footer__text">AI Academy — Lär dig Claude Desktop steg för steg</p>
+  </footer>
+
+  <script src="js/academy.js"></script>
+</body>
+</html>

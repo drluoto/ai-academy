@@ -1,0 +1,1642 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modul 4 — Nästa nivå: Claude Code | AI Academy</title>
+
+  <!-- OG / Social -->
+  <meta property="og:title" content="Modul 4 — Nästa nivå: Claude Code | AI Academy">
+  <meta property="og:description" content="Claude Desktop gör dig snabbare. Claude Code gör din organisation smartare. Showcase av avancerade agentsystem.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="./og-image.png">  <meta property="og:url" content="./claude-code.html">
+  <meta name="description" content="Claude Desktop gör dig snabbare. Claude Code gör din organisation smartare. Showcase och inspiration för avancerade agentsystem.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Design system + Academy layer -->
+  <link rel="stylesheet" href="css/vitronia-v2.css">
+  <link rel="stylesheet" href="css/academy.css">
+
+  <style>
+    /* ================================================================
+       MODUL 4 — CLAUDE CODE — page-specific styles
+       ================================================================ */
+
+    /* --- Hero --- */
+    .hero--code {
+      padding-top: 7rem;
+      padding-bottom: 4rem;
+      text-align: center;
+    }
+
+    .hero--code .hero__eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--amber);
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      border-radius: 99px;
+      padding: 0.3rem 0.875rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .hero--code .hero__eyebrow svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .hero__lead {
+      font-size: clamp(1rem, 2vw, 1.125rem);
+      color: var(--text-secondary);
+      max-width: 640px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* --- Section headers (reused from index) --- */
+    .section-header {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+
+    .section-header__eyebrow {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent-hover);
+      margin-bottom: 0.75rem;
+    }
+
+    .section-header__title {
+      font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      margin: 0 0 1rem;
+      color: var(--text-primary);
+    }
+
+    .section-header__subtitle {
+      font-size: 1.0625rem;
+      color: var(--text-secondary);
+      max-width: 640px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+
+    /* ================================================================
+       COMPARISON TABLE — Desktop vs Code
+       ================================================================ */
+    .comparison-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-top: 2.5rem;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 2.5rem;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: 0.875rem 1.25rem;
+      text-align: left;
+      font-size: 0.9375rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .comparison-table thead th {
+      font-weight: 700;
+      font-size: 0.8125rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      padding-bottom: 0.75rem;
+    }
+
+    .comparison-table thead th:nth-child(2) {
+      color: var(--accent-hover);
+    }
+
+    .comparison-table thead th:nth-child(3) {
+      color: var(--amber);
+    }
+
+    .comparison-table td:first-child {
+      color: var(--text-secondary);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .comparison-table td:nth-child(2) {
+      color: var(--text-primary);
+    }
+
+    .comparison-table td:nth-child(3) {
+      color: var(--text-primary);
+    }
+
+    .comparison-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .comparison-table tbody tr {
+      transition: background var(--transition-fast);
+    }
+
+    .comparison-table tbody tr:hover {
+      background: var(--surface-2);
+    }
+
+    /* --- Two mockup windows --- */
+    .mockup-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .mockup-window {
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+
+    .mockup-window:hover {
+      border-color: rgba(99, 102, 241, 0.3);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+
+    .mockup-window--code:hover {
+      border-color: rgba(245, 158, 11, 0.3);
+    }
+
+    .mockup-titlebar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.625rem 1rem;
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .mockup-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--surface-4);
+    }
+
+    .mockup-dot:nth-child(1) { background: #EF4444; }
+    .mockup-dot:nth-child(2) { background: #F59E0B; }
+    .mockup-dot:nth-child(3) { background: #10B981; }
+
+    .mockup-titlebar__label {
+      font-size: 0.6875rem;
+      color: var(--text-tertiary);
+      margin-left: 0.5rem;
+      font-family: var(--font-mono);
+    }
+
+    .mockup-body {
+      padding: 1.25rem;
+      min-height: 200px;
+    }
+
+    .mockup-body--desktop {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .mockup-chat-bubble {
+      padding: 0.625rem 0.875rem;
+      border-radius: 12px 12px 12px 4px;
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      max-width: 85%;
+    }
+
+    .mockup-chat-bubble--ai {
+      background: var(--surface-2);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+
+    .mockup-chat-bubble--user {
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--accent-hover);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: 12px 12px 4px 12px;
+      align-self: flex-end;
+    }
+
+    .mockup-input-bar {
+      margin-top: auto;
+      padding: 0.5rem 0.75rem;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+    }
+
+    .mockup-body--terminal {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      line-height: 1.7;
+      color: var(--text-secondary);
+    }
+
+    .mockup-body--terminal .term-prompt {
+      color: var(--green);
+    }
+
+    .mockup-body--terminal .term-cmd {
+      color: var(--text-primary);
+    }
+
+    .mockup-body--terminal .term-comment {
+      color: var(--text-tertiary);
+    }
+
+    .mockup-body--terminal .term-file {
+      color: var(--amber);
+    }
+
+    .mockup-body--terminal .term-output {
+      color: var(--accent-hover);
+    }
+
+
+    /* ================================================================
+       CAPABILITY CARDS — 5-grid
+       ================================================================ */
+    .cap-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+
+    /* Last two cards span the bottom row centered */
+    .cap-grid .cap-card:nth-child(4),
+    .cap-grid .cap-card:nth-child(5) {
+      /* stays in 3-col grid, auto placement works */
+    }
+
+    .cap-card {
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem 1.5rem;
+      position: relative;
+      overflow: hidden;
+      transition:
+        border-color var(--transition),
+        transform var(--transition),
+        box-shadow var(--transition);
+    }
+
+    .cap-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+
+    .cap-card:hover {
+      border-color: rgba(99, 102, 241, 0.35);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(99, 102, 241, 0.08);
+    }
+
+    .cap-card:hover::before {
+      opacity: 1;
+    }
+
+    .cap-card__icon {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius);
+      background: rgba(99, 102, 241, 0.1);
+      color: var(--accent-hover);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.125rem;
+    }
+
+    .cap-card__icon svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .cap-card__title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.01em;
+    }
+
+    .cap-card__title code {
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      background: rgba(245, 158, 11, 0.12);
+      color: var(--amber);
+      padding: 0.1em 0.4em;
+      border-radius: 4px;
+    }
+
+    .cap-card__desc {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+
+    /* ================================================================
+       ADVANCED SYSTEMS — 4 showcase visualizations
+       ================================================================ */
+    .showcase-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .showcase-card {
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem 1.75rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .showcase-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius-lg);
+      background: radial-gradient(ellipse at top left, rgba(99,102,241,0.04), transparent 60%);
+      pointer-events: none;
+    }
+
+    .showcase-card__label {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent-hover);
+      margin-bottom: 0.625rem;
+    }
+
+    .showcase-card__title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.02em;
+    }
+
+
+    /* --- Context Engineering: 3 stacked layers --- */
+    .layers {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .layer {
+      padding: 0.875rem 1.25rem;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      position: relative;
+      transition: background var(--transition-fast);
+    }
+
+    .layer:first-child {
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    }
+
+    .layer:last-child {
+      border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    }
+
+    .layer:not(:first-child) {
+      border-top: none;
+    }
+
+    .layer__tag {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 0.25rem;
+    }
+
+    .layer--strategic .layer__tag { color: var(--accent-hover); }
+    .layer--domain .layer__tag { color: var(--amber); }
+    .layer--operational .layer__tag { color: var(--green); }
+
+    .layer__text {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .layer-annotation {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      padding-top: 0.75rem;
+    }
+
+    .layer-annotation__arrow {
+      color: var(--accent-hover);
+      flex-shrink: 0;
+    }
+
+    .layer-annotation__text {
+      font-size: 0.8125rem;
+      color: var(--text-tertiary);
+      font-style: italic;
+    }
+
+
+    /* --- Long-term memory: Timeline --- */
+    .timeline {
+      position: relative;
+      padding: 0.5rem 0;
+    }
+
+    .timeline__track {
+      position: absolute;
+      top: 18px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--border);
+    }
+
+    .timeline__track-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+      border-radius: 1px;
+    }
+
+    .timeline__nodes {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .timeline__node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+    }
+
+    .timeline__dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--surface-1);
+      box-shadow: 0 0 0 2px var(--accent);
+      margin-bottom: 0.75rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .timeline__node:last-child .timeline__dot {
+      background: var(--accent-hover);
+      box-shadow: 0 0 0 2px var(--accent-hover), 0 0 12px rgba(99,102,241,0.4);
+    }
+
+    .timeline__label {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.375rem;
+    }
+
+    .timeline__insight {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      line-height: 1.45;
+      text-align: center;
+      max-width: 120px;
+      font-style: italic;
+    }
+
+    .timeline__node:last-child .timeline__insight {
+      color: var(--accent-hover);
+      font-weight: 600;
+      font-style: normal;
+    }
+
+
+    /* --- PDSA Cycle --- */
+    .pdsa-cycle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem 0;
+    }
+
+    .pdsa-ring {
+      position: relative;
+      width: 220px;
+      height: 220px;
+    }
+
+    .pdsa-ring svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .pdsa-quadrant {
+      position: absolute;
+      width: 80px;
+      height: auto;
+      text-align: center;
+    }
+
+    .pdsa-quadrant__letter {
+      font-size: 1.5rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 0.125rem;
+    }
+
+    .pdsa-quadrant__label {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .pdsa-q--plan { top: 8px; left: 50%; transform: translateX(-50%); }
+    .pdsa-q--plan .pdsa-quadrant__letter,
+    .pdsa-q--plan .pdsa-quadrant__label { color: var(--accent-hover); }
+
+    .pdsa-q--do { top: 50%; right: -8px; transform: translateY(-50%); }
+    .pdsa-q--do .pdsa-quadrant__letter,
+    .pdsa-q--do .pdsa-quadrant__label { color: var(--green); }
+
+    .pdsa-q--study { bottom: 8px; left: 50%; transform: translateX(-50%); }
+    .pdsa-q--study .pdsa-quadrant__letter,
+    .pdsa-q--study .pdsa-quadrant__label { color: var(--amber); }
+
+    .pdsa-q--act { top: 50%; left: -8px; transform: translateY(-50%); }
+    .pdsa-q--act .pdsa-quadrant__letter,
+    .pdsa-q--act .pdsa-quadrant__label { color: var(--red); }
+
+    .pdsa-annotation {
+      font-size: 0.8125rem;
+      color: var(--text-tertiary);
+      font-style: italic;
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+
+    /* --- Agent Architecture Diagram --- */
+    .arch {
+      padding: 0.5rem 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    /* Central brain / orchestrator */
+    .arch__core {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.625rem;
+      padding: 0.625rem 1rem;
+      background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(99,102,241,0.06));
+      border: 1px solid rgba(99,102,241,0.4);
+      border-radius: var(--radius-lg);
+      position: relative;
+    }
+
+    .arch__core::before {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: calc(var(--radius-lg) + 3px);
+      border: 1px solid rgba(99,102,241,0.15);
+      animation: arch-pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes arch-pulse {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 0.7; }
+    }
+
+    .arch__core-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .arch__core-icon svg { width: 16px; height: 16px; }
+
+    .arch__core-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .arch__core-label {
+      font-size: 0.8125rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .arch__core-sub {
+      font-size: 0.625rem;
+      color: var(--text-tertiary);
+    }
+
+    /* Capability ring: 2x2 grid around the core */
+    .arch__ring {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.375rem;
+    }
+
+    .arch__cap {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      padding: 0.5rem 0.625rem;
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    .arch__cap-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .arch__cap-icon svg { width: 12px; height: 12px; }
+
+    .arch__cap--memory .arch__cap-icon { background: rgba(99,102,241,0.15); color: var(--accent-hover); }
+    .arch__cap--integrations .arch__cap-icon { background: rgba(16,185,129,0.15); color: var(--green); }
+    .arch__cap--knowledge .arch__cap-icon { background: rgba(245,158,11,0.15); color: var(--amber); }
+    .arch__cap--skills .arch__cap-icon { background: rgba(236,72,153,0.15); color: #EC4899; }
+
+    .arch__cap-body {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .arch__cap-title {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+
+    .arch__cap-detail {
+      font-size: 0.5625rem;
+      color: var(--text-tertiary);
+      line-height: 1.4;
+      margin-top: 1px;
+    }
+
+    /* Bidirectional connector */
+    .arch__connector {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.375rem;
+      padding: 0.125rem 0;
+      color: var(--text-tertiary);
+      font-size: 0.5625rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+    }
+
+    .arch__connector svg {
+      width: 12px;
+      height: 12px;
+      opacity: 0.5;
+    }
+
+    /* Subagent row */
+    .arch__subagents {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.375rem;
+      padding: 0.5rem 0.75rem;
+      background: rgba(16,185,129,0.06);
+      border: 1px dashed rgba(16,185,129,0.3);
+      border-radius: var(--radius);
+    }
+
+    .arch__subagent {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.25rem 0.5rem;
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.5625rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .arch__subagent svg {
+      width: 10px;
+      height: 10px;
+      color: var(--green);
+    }
+
+    .arch__subagents-label {
+      font-size: 0.5625rem;
+      color: var(--text-tertiary);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    /* Insight */
+    .arch__insight {
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+      font-style: italic;
+      margin-top: 0.25rem;
+      padding: 0 0.5rem;
+    }
+
+
+    /* ================================================================
+       CTA / BRIDGE SECTION
+       ================================================================ */
+    .bridge-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+
+    .bridge-card {
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem 1.75rem;
+      display: flex;
+      flex-direction: column;
+      transition:
+        border-color var(--transition),
+        transform var(--transition),
+        box-shadow var(--transition);
+    }
+
+    .bridge-card:hover {
+      border-color: rgba(99, 102, 241, 0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+    }
+
+    .bridge-card__title {
+      font-size: 1.0625rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.01em;
+    }
+
+    .bridge-card__desc {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      flex: 1;
+      margin-bottom: 1.25rem;
+    }
+
+    .bridge-card__products {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      flex: 1;
+    }
+
+    .bridge-card__product {
+      font-size: 0.8125rem;
+      line-height: 1.55;
+    }
+
+    .bridge-card__product strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .bridge-card__product span {
+      color: var(--text-secondary);
+    }
+
+    .bridge-card .btn {
+      align-self: flex-start;
+    }
+
+
+    /* ================================================================
+       MODULE NAV (bottom prev/next)
+       ================================================================ */
+    .module-nav-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2rem 0;
+      border-top: 1px solid var(--border);
+      margin-top: 4rem;
+    }
+
+    .module-nav-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color var(--transition-fast);
+    }
+
+    .module-nav-link:hover {
+      color: var(--accent-hover);
+    }
+
+    .module-nav-link svg {
+      width: 18px;
+      height: 18px;
+    }
+
+
+    /* ================================================================
+       FOOTER
+       ================================================================ */
+    .site-footer {
+      border-top: 1px solid var(--border);
+      padding: 3rem 0 2rem;
+      margin-top: 0;
+    }
+
+    .site-footer__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+
+    .site-footer__brand {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      text-decoration: none;
+    }
+
+    .site-footer__logo {
+      width: 28px;
+      height: 28px;
+      color: var(--accent-hover);
+    }
+
+    .site-footer__wordmark {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    .site-footer__links {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      flex-wrap: wrap;
+    }
+
+    .site-footer__link {
+      font-size: 0.8125rem;
+      color: var(--text-tertiary);
+      text-decoration: none;
+      transition: color var(--transition-fast);
+    }
+
+    .site-footer__link:hover {
+      color: var(--text-primary);
+    }
+
+    .site-footer__copy {
+      width: 100%;
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+
+    /* ================================================================
+       RESPONSIVE
+       ================================================================ */
+    @media (max-width: 900px) {
+      .showcase-grid {
+        grid-template-columns: 1fr;
+      }
+      .bridge-grid {
+        grid-template-columns: 1fr;
+      }
+      .cap-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .mockup-pair {
+        grid-template-columns: 1fr;
+      }
+      .cap-grid {
+        grid-template-columns: 1fr;
+      }
+      .comparison-wrapper {
+        grid-template-columns: 1fr;
+      }
+      .timeline__nodes {
+        gap: 0.25rem;
+      }
+      .timeline__insight {
+        font-size: 0.6875rem;
+        max-width: 80px;
+      }
+      .pdsa-ring {
+        width: 180px;
+        height: 180px;
+      }
+      .pdsa-quadrant {
+        width: 60px;
+      }
+      .pdsa-quadrant__letter {
+        font-size: 1.125rem;
+      }
+      .orch-sources {
+        gap: 0.625rem;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .site-footer__inner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .module-nav-bottom {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+      }
+    }
+
+
+    /* ================================================================
+       ANIMATIONS
+       ================================================================ */
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 0 2px var(--accent-hover), 0 0 12px rgba(99,102,241,0.3); }
+      50% { box-shadow: 0 0 0 2px var(--accent-hover), 0 0 20px rgba(99,102,241,0.6); }
+    }
+
+    .timeline__node:last-child .timeline__dot {
+      animation: pulse-glow 2.5s ease-in-out infinite;
+    }
+
+    @keyframes rotate-cycle {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .pdsa-ring__arrow-path {
+      animation: rotate-cycle 12s linear infinite;
+      transform-origin: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================================================================
+       NAVIGATION
+       ================================================================ -->
+  <nav class="academy-nav" role="navigation" aria-label="Huvudnavigering">
+    <div class="academy-nav__inner">
+      <a href="index.html" class="academy-nav__brand">
+        <svg class="academy-nav__brand-logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c3.87 0 7 3.13 7 7s-3.13 7-7 7-7-3.13-7-7 3.13-7 7-7zm0 3c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 3c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z" fill="currentColor" opacity="0.9"/>
+        </svg>
+        <span class="academy-nav__brand-name">AI</span>
+        <span class="academy-nav__brand-sep">/</span>
+        <span class="academy-nav__brand-name" style="color: var(--accent-hover);">Academy</span>
+      </a>
+      <ul class="academy-nav__links">
+        <li><a href="index.html" class="academy-nav__link">Översikt</a></li>
+        <li><a href="reveal.html" class="academy-nav__link">Modul 0</a></li>
+        <li><a href="cowork.html" class="academy-nav__link">Modul 1</a></li>
+        <li><a href="rapport.html" class="academy-nav__link">Modul 2</a></li>
+        <li><a href="automation.html" class="academy-nav__link">Modul 3</a></li>
+        <li><a href="claude-code.html" class="academy-nav__link active">Modul 4</a></li>
+        <li><a href="transformation.html" class="academy-nav__link">Advisory</a></li>
+      </ul>
+      <button class="academy-nav__hamburger" aria-label="Meny" aria-expanded="false" onclick="this.setAttribute('aria-expanded', this.getAttribute('aria-expanded')==='false');document.getElementById('mobile-drawer').classList.toggle('open');">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile drawer -->
+  <div class="academy-nav__mobile-drawer" id="mobile-drawer">
+    <a href="index.html" class="academy-nav__mobile-link">Översikt</a>
+    <a href="reveal.html" class="academy-nav__mobile-link">Modul 0 — Reveal</a>
+    <a href="cowork.html" class="academy-nav__mobile-link">Modul 1 — Cowork</a>
+    <a href="rapport.html" class="academy-nav__mobile-link">Modul 2 — Rapport</a>
+    <a href="automation.html" class="academy-nav__mobile-link">Modul 3 — Plugins</a>
+    <a href="claude-code.html" class="academy-nav__mobile-link active">Modul 4 — Claude Code</a>
+    <a href="transformation.html" class="academy-nav__mobile-link">Advisory</a>
+  </div>
+
+  <!-- Progress bar -->
+  <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+
+  <main>
+
+    <!-- ================================================================
+         HERO
+         ================================================================ -->
+    <section class="hero hero--code section" aria-label="Introduktion">
+      <div class="container--wide">
+
+        <div class="hero__eyebrow animate-on-scroll">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          Modul 4 — Showcase — 15 min
+        </div>
+
+        <h1 class="hero__title animate-on-scroll" data-delay="80">
+          Nästa nivå — <span class="gradient-text">Claude Code</span>
+        </h1>
+
+        <p class="hero__subtitle animate-on-scroll" data-delay="160">
+          Claude Desktop gör dig snabbare. Claude Code gör din organisation smartare.
+        </p>
+
+        <p class="hero__lead animate-on-scroll" data-delay="240">
+          Du har lärt dig använda Claude Desktop för att analysera data, bygga rapporter och automatisera workflows. Nu visar vi vad som är möjligt när du tar nästa steg.
+        </p>
+
+      </div>
+    </section>
+
+
+    <!-- ================================================================
+         BLOCK 4.1: SKILLNADEN — Desktop vs Code
+         ================================================================ -->
+    <section class="section" id="skillnaden" data-section="skillnaden" aria-label="Desktop vs Code">
+      <div class="container--wide">
+
+        <div class="section-header animate-on-scroll">
+          <span class="section-header__eyebrow">Block 4.1 — 5 min</span>
+          <h2 class="section-header__title">Desktop vs Code</h2>
+          <p class="section-header__subtitle">
+            Två verktyg, två syften. Desktop är för alla. Code är för de som vill bygga system.
+          </p>
+        </div>
+
+        <!-- Comparison table -->
+        <div class="animate-on-scroll" data-delay="100">
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Claude Desktop</th>
+                <th>Claude Code</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Gränssnitt</td>
+                <td>Grafiskt</td>
+                <td>Terminal</td>
+              </tr>
+              <tr>
+                <td>Instruktioner</td>
+                <td>Kontextfiler (.md) per session</td>
+                <td>Bestående kontextfiler, laddas automatiskt</td>
+              </tr>
+              <tr>
+                <td>Bäst för</td>
+                <td>Ad-hoc + automation</td>
+                <td>Komplexa, repeterbara system</td>
+              </tr>
+              <tr>
+                <td>Användare</td>
+                <td>Alla</td>
+                <td>Teknisk kompetens krävs</td>
+              </tr>
+              <tr>
+                <td>Samarbete</td>
+                <td>Team-abonnemang + delade projekt</td>
+                <td>Hela teamet via git</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Side-by-side mockup windows -->
+        <div class="mockup-pair animate-on-scroll" data-delay="200">
+
+          <!-- Desktop mockup -->
+          <div class="mockup-window">
+            <div class="mockup-titlebar">
+              <div class="mockup-dot"></div>
+              <div class="mockup-dot"></div>
+              <div class="mockup-dot"></div>
+              <span class="mockup-titlebar__label">Claude Desktop</span>
+            </div>
+            <div class="mockup-body mockup-body--desktop">
+              <div class="mockup-chat-bubble mockup-chat-bubble--user">
+                Analysera Q4-resultaten i bifogad Excel
+              </div>
+              <div class="mockup-chat-bubble mockup-chat-bubble--ai">
+                Jag ser tre nyckelinsikter i datan...
+              </div>
+              <div class="mockup-chat-bubble mockup-chat-bubble--user">
+                Kan du göra en graf över trenden?
+              </div>
+              <div class="mockup-input-bar">Skicka meddelande...</div>
+            </div>
+          </div>
+
+          <!-- Code mockup -->
+          <div class="mockup-window mockup-window--code">
+            <div class="mockup-titlebar">
+              <div class="mockup-dot"></div>
+              <div class="mockup-dot"></div>
+              <div class="mockup-dot"></div>
+              <span class="mockup-titlebar__label">Claude Code — Terminal</span>
+            </div>
+            <div class="mockup-body mockup-body--terminal">
+              <div><span class="term-prompt">$</span> <span class="term-cmd">claude</span></div>
+              <div><span class="term-comment"># Laddar kontextfiler automatiskt...</span></div>
+              <div><span class="term-output">&#10003; Laddade 12 kontextfiler</span></div>
+              <div><span class="term-output">&#10003; 4 granskningsagenter redo</span></div>
+              <div><span class="term-output">&#10003; Kvalitetsgate konfigurerad</span></div>
+              <div style="margin-top: 0.5rem;"><span class="term-prompt">&#8250;</span> <span class="term-cmd">Generera månadens styrelserapport</span></div>
+              <div><span class="term-file">  Skapar rapport...</span></div>
+              <div><span class="term-file">  Kör 4 parallella granskningar…</span></div>
+              <div><span class="term-output">&#10003; Rapport klar, skickad via mail</span></div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ================================================================
+         BLOCK 4.2: FEM KAPACITETER
+         ================================================================ -->
+    <section class="section" id="kapaciteter" data-section="kapaciteter" aria-label="Fem kapaciteter">
+      <div class="container--wide">
+
+        <div class="section-header animate-on-scroll">
+          <span class="section-header__eyebrow">Block 4.2 — 5 min</span>
+          <h2 class="section-header__title">Vad kan man bygga?</h2>
+          <p class="section-header__subtitle">
+            Fem kapaciteter som skiljer ad-hoc-användning från riktiga agentsystem.
+          </p>
+        </div>
+
+        <div class="cap-grid animate-on-scroll animate-stagger" data-delay="80">
+
+          <!-- 1. Context Engineering -->
+          <div class="cap-card">
+            <div class="cap-card__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            </div>
+            <h3 class="cap-card__title">Context Engineering — Bestående kontext</h3>
+            <p class="cap-card__desc">Kontextfiler, instruktioner, domänkunskap och kvalitetskrav som agenten laddar automatiskt. Bygger kumulativ intelligens över tid.</p>
+          </div>
+
+          <!-- 2. Skills -->
+          <div class="cap-card">
+            <div class="cap-card__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            </div>
+            <h3 class="cap-card__title">Skills — Återanvändbara workflows</h3>
+            <p class="cap-card__desc">Kodifierade processer som hela teamet delar via git. Skriv en gång, använd överallt.</p>
+          </div>
+
+          <!-- 3. Multi-agent granskning -->
+          <div class="cap-card">
+            <div class="cap-card__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <h3 class="cap-card__title">Multi-agent granskning</h3>
+            <p class="cap-card__desc">En agent producerar. Fyra agenter granskar — data, logik, strategi, mottagare. Samma rapport, fyra perspektiv.</p>
+          </div>
+
+          <!-- 4. Git-delning -->
+          <div class="cap-card">
+            <div class="cap-card__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" y1="9" x2="6" y2="21"/></svg>
+            </div>
+            <h3 class="cap-card__title">Git-delning</h3>
+            <p class="cap-card__desc">Kontextfiler, instruktioner och skills checkas in i git. Alla som klonar repot får samma agentbeteende automatiskt.</p>
+          </div>
+
+          <!-- 5. Schemalagnning -->
+          <div class="cap-card">
+            <div class="cap-card__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <h3 class="cap-card__title">Schemaläggning utan GUI</h3>
+            <p class="cap-card__desc">Agenter som körs via cron — rapporter, analyser, övervakning — helt utan att någon öppnar en app.</p>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ================================================================
+         BLOCK 4.3: AVANCERADE AGENTSYSTEM
+         ================================================================ -->
+    <section class="section section--lg" id="avancerat" data-section="avancerat" aria-label="Avancerade agentsystem">
+      <div class="container--wide">
+
+        <div class="section-header animate-on-scroll">
+          <span class="section-header__eyebrow">Block 4.3 — 5 min</span>
+          <h2 class="section-header__title">State of the art</h2>
+          <p class="section-header__subtitle">
+            Det här är inte framtiden. Det finns i produktion idag.
+          </p>
+        </div>
+
+        <div class="showcase-grid">
+
+          <!-- 1. Context Engineering -->
+          <div class="showcase-card animate-on-scroll" data-delay="0">
+            <div class="showcase-card__label">Visualisering</div>
+            <h3 class="showcase-card__title">Context Engineering</h3>
+
+            <div class="layers">
+              <div class="layer layer--strategic">
+                <div class="layer__tag">Strategisk kontext</div>
+                <div class="layer__text">OKR, mål, vision, prioriteringar</div>
+              </div>
+              <div class="layer layer--domain">
+                <div class="layer__tag">Domänkontext</div>
+                <div class="layer__text">Branschregler, datakällor, processer</div>
+              </div>
+              <div class="layer layer--operational">
+                <div class="layer__tag">Operativ kontext</div>
+                <div class="layer__text">Dagens data, pågående uppgifter, senaste beslut</div>
+              </div>
+            </div>
+
+            <div class="layer-annotation">
+              <svg class="layer-annotation__arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+              <span class="layer-annotation__text">Rätt kontext laddas automatiskt baserat på uppgiftstyp</span>
+            </div>
+          </div>
+
+          <!-- 2. Langtidsminne -->
+          <div class="showcase-card animate-on-scroll" data-delay="100">
+            <div class="showcase-card__label">Visualisering</div>
+            <h3 class="showcase-card__title">Långtidsminne</h3>
+
+            <div class="timeline">
+              <div class="timeline__track">
+                <div class="timeline__track-fill"></div>
+              </div>
+              <div class="timeline__nodes">
+                <div class="timeline__node">
+                  <div class="timeline__dot"></div>
+                  <div class="timeline__label">Session 1</div>
+                  <div class="timeline__insight">Första uppgiften</div>
+                </div>
+                <div class="timeline__node">
+                  <div class="timeline__dot"></div>
+                  <div class="timeline__label">Session 5</div>
+                  <div class="timeline__insight">"CFO vill ha Excel-format"</div>
+                </div>
+                <div class="timeline__node">
+                  <div class="timeline__dot"></div>
+                  <div class="timeline__label">Session 12</div>
+                  <div class="timeline__insight">"Börja alltid med slutsatserna"</div>
+                </div>
+                <div class="timeline__node">
+                  <div class="timeline__dot"></div>
+                  <div class="timeline__label">Session 50</div>
+                  <div class="timeline__insight">Kvaliteten ökar över tid</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. PDSA-cykel -->
+          <div class="showcase-card animate-on-scroll" data-delay="200">
+            <div class="showcase-card__label">Visualisering</div>
+            <h3 class="showcase-card__title">Självförbättrande kvalitet</h3>
+
+            <div class="pdsa-cycle">
+              <div class="pdsa-ring">
+                <!-- SVG circular arrow -->
+                <svg viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <!-- Outer ring / track -->
+                  <circle cx="110" cy="110" r="90" stroke="var(--border)" stroke-width="2" fill="none"/>
+                  <!-- Animated arc segments -->
+                  <path d="M110 20 A90 90 0 0 1 200 110" stroke="var(--accent-hover)" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.7"/>
+                  <path d="M200 110 A90 90 0 0 1 110 200" stroke="var(--green)" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.7"/>
+                  <path d="M110 200 A90 90 0 0 1 20 110" stroke="var(--amber)" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.7"/>
+                  <path d="M20 110 A90 90 0 0 1 110 20" stroke="var(--red)" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.7"/>
+                  <!-- Arrow heads -->
+                  <polygon points="200,110 190,104 190,116" fill="var(--green)" opacity="0.8"/>
+                  <polygon points="110,200 104,190 116,190" fill="var(--amber)" opacity="0.8"/>
+                  <polygon points="20,110 30,104 30,116" fill="var(--red)" opacity="0.8"/>
+                  <polygon points="110,20 104,30 116,30" fill="var(--accent-hover)" opacity="0.8"/>
+                </svg>
+
+                <!-- Quadrant labels -->
+                <div class="pdsa-quadrant pdsa-q--plan">
+                  <div class="pdsa-quadrant__letter">P</div>
+                  <div class="pdsa-quadrant__label">Plan</div>
+                </div>
+                <div class="pdsa-quadrant pdsa-q--do">
+                  <div class="pdsa-quadrant__letter">D</div>
+                  <div class="pdsa-quadrant__label">Do</div>
+                </div>
+                <div class="pdsa-quadrant pdsa-q--study">
+                  <div class="pdsa-quadrant__letter">S</div>
+                  <div class="pdsa-quadrant__label">Study</div>
+                </div>
+                <div class="pdsa-quadrant pdsa-q--act">
+                  <div class="pdsa-quadrant__letter">A</div>
+                  <div class="pdsa-quadrant__label">Act</div>
+                </div>
+              </div>
+            </div>
+
+            <p class="pdsa-annotation">Agenten utvärderar sin egen output och itererar autonomt — tills kvaliteten är tillräcklig</p>
+          </div>
+
+          <!-- 4. Agent-orchestrering -->
+          <div class="showcase-card animate-on-scroll" data-delay="300">
+            <div class="showcase-card__label">Arkitektur</div>
+            <h3 class="showcase-card__title">Agent-orchestrering</h3>
+
+            <div class="arch">
+              <!-- Central orchestrator -->
+              <div class="arch__core">
+                <div class="arch__core-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
+                </div>
+                <div class="arch__core-text">
+                  <span class="arch__core-label">Main Orchestrator</span>
+                  <span class="arch__core-sub">Planerar, delegerar, kvalitetssäkrar</span>
+                </div>
+              </div>
+
+              <!-- Capability ring: 4 pillars -->
+              <div class="arch__ring">
+                <div class="arch__cap arch__cap--memory">
+                  <div class="arch__cap-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+                  </div>
+                  <div class="arch__cap-body">
+                    <span class="arch__cap-title">Minnessystem</span>
+                    <span class="arch__cap-detail">Arbetsminne, session, långtid</span>
+                  </div>
+                </div>
+                <div class="arch__cap arch__cap--integrations">
+                  <div class="arch__cap-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                  </div>
+                  <div class="arch__cap-body">
+                    <span class="arch__cap-title">Integrationer</span>
+                    <span class="arch__cap-detail">Mail, Slack, Power BI, Drive</span>
+                  </div>
+                </div>
+                <div class="arch__cap arch__cap--knowledge">
+                  <div class="arch__cap-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                  </div>
+                  <div class="arch__cap-body">
+                    <span class="arch__cap-title">Domänkunskap</span>
+                    <span class="arch__cap-detail">Branschregler, processer, KPI:er</span>
+                  </div>
+                </div>
+                <div class="arch__cap arch__cap--skills">
+                  <div class="arch__cap-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                  </div>
+                  <div class="arch__cap-body">
+                    <span class="arch__cap-title">Skills &amp; processer</span>
+                    <span class="arch__cap-detail">Rapportflöden, granskningar, PDSA</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Bidirectional connector to subagents -->
+              <div class="arch__connector">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 17 2 12 7 7"/><polyline points="17 7 22 12 17 17"/></svg>
+                delegerar &amp; koordinerar
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 17 2 12 7 7"/><polyline points="17 7 22 12 17 17"/></svg>
+              </div>
+
+              <!-- Dynamic subagent pool -->
+              <div class="arch__subagents">
+                <span class="arch__subagents-label">Subagenter</span>
+                <div class="arch__subagent">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
+                  Data
+                </div>
+                <div class="arch__subagent">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
+                  Logik
+                </div>
+                <div class="arch__subagent">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
+                  Strategi
+                </div>
+                <div class="arch__subagent">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
+                  Skriv
+                </div>
+              </div>
+
+              <p class="arch__insight">Orchestratorn planerar arbetet, laddar rätt kontext, delegerar till specialiserade subagenter och kvalitetssäkrar resultatet</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ================================================================
+         BRYGGA — Nasta steg
+         ================================================================ -->
+    <section class="section section--lg" id="nasta-steg" data-section="nasta-steg" aria-label="Nästa steg">
+      <div class="container--wide">
+
+        <div class="section-header animate-on-scroll">
+          <span class="section-header__eyebrow">Nästa steg</span>
+          <h2 class="section-header__title">Vad vill du göra härnäst?</h2>
+        </div>
+
+        <div class="bridge-grid animate-on-scroll animate-stagger" data-delay="80">
+
+          <!-- Card 1: Agentsystem & Claude Code (merged) -->
+          <div class="bridge-card">
+            <h3 class="bridge-card__title">Agentsystem &amp; Claude Code</h3>
+            <p class="bridge-card__desc">
+              Avancerad kurs om agentbyggande, skräddarsydda agentsystem eller rådgivning. Context engineering, multi-agent granskning, långtidsminne och självförbättrande kvalitet.
+            </p>
+            <a href="kontakt.html?interest=agentsystem" class="btn btn--primary">
+              Kontakta oss
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+
+          <!-- Card 3: Produkter -->
+          <div class="bridge-card">
+            <h3 class="bridge-card__title">Verksamhetsplattformar</h3>
+            <ul class="bridge-card__products">
+              <li class="bridge-card__product">
+                <strong>Finance Portal</strong> — <span>Koncernkonsolidering och operativ uppföljning. Plattformen analyserar avvikelser och flaggar det som kräver uppmärksamhet.</span>
+              </li>
+              <li class="bridge-card__product">
+                <strong>ESG Portal</strong> — <span>Hållbarhetsrapportering över alla bolag. Systemet sammanställer, ni godkänner.</span>
+              </li>
+              <li class="bridge-card__product">
+                <strong>Shadow IC</strong> — <span>AI-agenter som granskar, debatterar och stresstester investeringsbeslut innan de når den riktiga kommittén.</span>
+              </li>
+            </ul>
+            <a href="kontakt.html?interest=demo" class="btn btn--secondary">
+              Boka demo
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ================================================================
+         MODULE NAV (bottom)
+         ================================================================ -->
+    <div class="container--wide">
+      <nav class="module-nav-bottom" aria-label="Modulnavigering">
+        <a href="automation.html" class="module-nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+          Modul 3 — Plugins &amp; Skills
+        </a>
+        <a href="index.html" class="module-nav-link">
+          Tillbaka till översikt
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+        </a>
+      </nav>
+    </div>
+
+  </main>
+
+
+  <!-- ================================================================
+       FOOTER
+       ================================================================ -->
+  <footer class="site-footer">
+    <div class="container--wide">
+      <div class="site-footer__inner">
+
+        <a href="index.html" class="site-footer__brand" target="_blank" rel="noopener">
+          <svg class="site-footer__logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c3.87 0 7 3.13 7 7s-3.13 7-7 7-7-3.13-7-7 3.13-7 7-7zm0 3c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 3c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z" fill="currentColor"/>
+          </svg>
+          <span class="site-footer__wordmark">AI Academy</span>
+        </a>
+
+        <ul class="site-footer__links">
+          <li><a href="index.html" class="site-footer__link">Academy</a></li>
+          <li><a href="transformation.html" class="site-footer__link">Advisory</a></li>
+          <li><a href="#" class="site-footer__link">Kontakt</a></li>
+        </ul>
+
+      </div>
+      <p class="site-footer__copy">&copy; 2026 AI Academy. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="js/academy.js"></script>
+</body>
+</html>
