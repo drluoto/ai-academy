@@ -2196,6 +2196,9 @@ td strong {
 }
 
 /* --- Annotations (HTML overlay, not burned into image) --- */
+/* Only the numbered circle shows on the image.
+   Descriptive text is hidden here and shown in a
+   .screenshot-legend below the screenshot-frame.       */
 
 .screenshot-annotation {
   position: absolute;
@@ -2220,14 +2223,42 @@ td strong {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
+/* Hide the text bubble on the image — legend below shows the text */
 .screenshot-annotation__text {
-  background: rgba(0, 0, 0, 0.85);
-  color: white;
-  padding: 0.25rem 0.75rem;
-  border-radius: var(--radius, 8px);
+  display: none;
+}
+
+/* --- Screenshot legend (below image) --- */
+
+.screenshot-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+  padding: 0.625rem 1rem;
+  background: var(--surface-2, rgba(255,255,255,0.04));
+  border-top: 1px solid var(--border, rgba(255,255,255,0.08));
+  border-radius: 0 0 var(--radius-lg, 12px) var(--radius-lg, 12px);
   font-size: 0.8125rem;
-  white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  color: var(--text-secondary, rgba(255,255,255,0.7));
+}
+
+.screenshot-legend__item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.screenshot-legend__marker {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent, #6366F1);
+  color: white;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
 }
 
 /* --- Caption below screenshot --- */
